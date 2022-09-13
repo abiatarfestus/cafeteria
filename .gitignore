@@ -3,6 +3,7 @@ venv
 venv/
 .vscode
 .env
+*.sqlite3
 # asgi.py
 # wsgi.py
 *.log
