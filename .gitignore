@@ -3,8 +3,8 @@ venv
 venv/
 .vscode
 .env
-asgi.py
-wsgi.py
+# asgi.py
+# wsgi.py
 *.log
 *.pot
 *.pyc

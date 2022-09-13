@@ -35,10 +35,12 @@ class Reservation(models.Model):
         ("PENDING", "Pending"),
         ("ACCEPTED", "Accepted"),
         ("DECLINED", "Declined"),
+        ("EXPIRED", "Expired"),
     ]
-    user = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
     status = models.CharField(max_length=8, choices=RESERVATION_STATUS, default="PENDING")
+    time_reserved = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.id}"
