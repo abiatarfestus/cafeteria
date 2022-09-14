@@ -1,17 +1,41 @@
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 # from django_resized import ResizedImageField
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
+# def validate_seat(value):
+#     """
+#     Validate whether the seat is open
+#     """
+#     selected_seat = Seat.objects.get(id=value)
+#     if selected_seat.reserved:
+#         raise ValidationError(
+#             _(f"The selected seat is already reserved."),
+#             params={'value': value},
+#         )
+
+# def validate_customer(value):
+#     """
+#     Validate whether the customer has no active/pending reservation
+#     """
+#     active_reservations = Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).select_related("customer")
+#     print(f"ACTIVE RESERVATIONS: {active_reservations}")
+#     reservists = [reservation.customer.id for reservation in active_reservations]
+#     print(f"RESERVISTS: {reservists}")
+#     if value in reservists:
+#         raise ValidationError(
+#             _(f"The customer already has an active reservation."),
+#             params={'value': value},
+#         )
+
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
+    customer = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        if len(self.user.first_name) == 0 or len(self.user.last_name) == 0:
-            return self.user.username
-        else:
-            return f"{self.user.first_name} {self.user.last_name}"
+        return f"{self.customer.username}"
 
 class Table(models.Model):
     table_number = models.IntegerField(unique=True, blank=False, null=False, default=0)
@@ -26,6 +50,15 @@ class Seat(models.Model):
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
     seat_number = models.IntegerField(unique=True, blank=False, null=False)
     reserved = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        selected_table = Table.objects.get(id=self.table.id)
+        number_of_seats = Seat.objects.filter(table=self.table.id).count()
+        print(f"SELECTED_TABLE: {selected_table}")
+        print(f"NUMBER_OF_SEATS: {number_of_seats}")
+        if number_of_seats >= selected_table.max_seats:
+            return  # The table has reached maximum seats
+        super(Seat, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.seat_number}"
@@ -42,17 +75,60 @@ class Reservation(models.Model):
     status = models.CharField(max_length=8, choices=RESERVATION_STATUS, default="PENDING")
     time_reserved = models.DateTimeField(auto_now_add=True)
 
+    # def save(self, *args, **kwargs):
+    #     selected_seat = Seat.objects.get(id=self.seat.id)
+    #     active_reservations = Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).select_related("customer")
+    #     print(f"ACTIVE RESERVATIONS: {active_reservations}")
+    #     reservists = [reservation.customer for reservation in active_reservations]
+    #     print(f"RESERVISTS: {reservists}")
+    #     if selected_seat.reserved:
+    #         return  # The seat you want is already reserved || remove this by showing open seats only
+    #     elif self.customer in reservists:
+    #         return # You already have a pending resevation || remove this by disabling reservation when already waiting
+    #     super(Reservation, self).save(*args, **kwargs)
+
+
+    def clean(self):
+        selected_seat = Seat.objects.get(id=self.seat.id)
+        print(f"SELECTED_SEAT: {selected_seat}")
+        active_reservations = Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).select_related("customer")
+        print(f"ACTIVE RESERVATIONS: {active_reservations}")
+        reservists = [reservation.customer for reservation in active_reservations]
+        print(f"RESERVISTS: {reservists}")
+        if selected_seat.reserved:
+            raise ValidationError({"seat": _("The selected seat is already reserved.")})  # The seat you want is already reserved || remove this by showing open seats only
+        elif self.customer in reservists:
+            raise ValidationError({"seat": _("The customer already has an active reservation.")}) # You already have a pending resevation || remove this by disabling reservation when already waiting
+
     def __str__(self):
         return f"{self.id}"
 
 
 class Product(models.Model):
+    PRODUCT_TYPES = [
+        ("FOOD", "Food"),
+        ("DRINK", "Drink"),
+        ("OTHER", "Other"),
+    ]
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
+    product_type = models.CharField(max_length=5, choices=PRODUCT_TYPES)
     price = models.FloatField()
     # image = models.ImageField(
     #     default="product_pics/placeholder.png", upload_to="product_pics"
     # )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "name",
+                    "description",
+                    "product_type"
+                ],
+                name="unique_products",
+            )
+        ]
 
     def __str__(self):
         return self.name

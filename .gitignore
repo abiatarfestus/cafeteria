@@ -8,6 +8,7 @@ venv/
 *.log
 *.pot
 *.pyc
+*.sqlite3
 migrations/
 __pycache__/
 #onestop/__pycache__/

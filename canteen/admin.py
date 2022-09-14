@@ -5,20 +5,23 @@ from .models import *
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("user", "id")
-    ordering = ("user",)
+    list_display = ("customer", "id")
+    ordering = ("customer",)
     search_fields = (
-        "user__last_name",
-        "user__first_name",
+        "customer__last_name",
+        "customer__first_name",
     )
 
 @admin.register(Table)
 class TableAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("table_number", "max_seats")
+    ordering = ("table_number",)
 
 @admin.register(Seat)
 class SeatAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("seat_number", "table", "reserved")
+    list_filter = ("reserved",)
+    ordering = ("seat_number",)
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
@@ -26,15 +29,26 @@ class ReservationAdmin(admin.ModelAdmin):
     list_display = ("id", "customer", "seat", "status", "time_reserved")
     list_filter = ("status",)
     ordering = ("id",)
-    # raw_id_fields = ("english_word",)
     search_fields = (
         "customer__username",
     )
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    pass
+    date_hierarchy = "date_ordered"
+    list_display = ("id", "customer", "delivery", "complete", "date_ordered")
+    list_filter = ("delivery", "complete", "date_ordered",)
+    ordering = ("customer",)
+    search_fields = (
+        "customer",
+    )
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    pass
+    date_hierarchy = "date_added"
+    list_display = ("id", "order", "product", "quantity")
+    list_filter = ("order",)
+    ordering = ("order",)
+    search_fields = (
+        "product",
+    )
