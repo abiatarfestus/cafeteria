@@ -20,7 +20,7 @@ from django.urls import path, include
 from canteen import views
 
 urlpatterns = [
-    path("", views.store, name="store"),
+    path("", views.canteen, name="canteen"),
     path('admin/', admin.site.urls),
     path("canteen", include("canteen.urls")),
     # path("users", include("users.urls")),

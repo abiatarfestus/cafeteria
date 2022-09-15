@@ -6,7 +6,7 @@ from .models import *
 from .utils import cookieCart, cartData, guestOrder
 
 
-def store(request):
+def canteen(request):
     data = cartData(request)
 
     cartItems = data["cartItems"]
@@ -15,7 +15,7 @@ def store(request):
 
     products = Product.objects.all()
     context = {"products": products, "cartItems": cartItems}
-    return render(request, "canteen/store.html", context)
+    return render(request, "canteen/canteen.html", context)
 
 
 def cart(request):
@@ -26,7 +26,7 @@ def cart(request):
     items = data["items"]
 
     context = {"items": items, "order": order, "cartItems": cartItems}
-    return render(request, "store/cart.html", context)
+    return render(request, "canteen/cart.html", context)
 
 
 def checkout(request):
@@ -37,7 +37,7 @@ def checkout(request):
     items = data["items"]
 
     context = {"items": items, "order": order, "cartItems": cartItems}
-    return render(request, "store/checkout.html", context)
+    return render(request, "canteen/checkout.html", context)
 
 
 def updateItem(request):
