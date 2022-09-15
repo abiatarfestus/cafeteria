@@ -26,15 +26,18 @@ from .models import Customer, Reservation, Seat
 @receiver(post_save, sender=Reservation)
 def update_seat_status(sender, instance, created, **kwargs):
     try:
-        seat = Seat.objects.get(id=instance.seat)
+        seat = Seat.objects.get(id=instance.seat_id)
         if instance.status == "PENDING":
-            seat.update(status="PENDING")
-            print(f"STATUS of Seat {seat.seat_number} {seat.status}")
+            seat.status = "PENDING"
+            seat.save()
+            print(f"STATUS of Seat {seat.seat_number} was changed to {seat.status}")
         elif instance.status == "ACCEPTED":
-            seat.update(status="RESERVED")
-            print(f"STATUS of Seat {seat.seat_number} {seat.status}")
+            seat.status = "RESERVED"
+            seat.save()
+            print(f"STATUS of Seat {seat.seat_number} was changed to {seat.status}")
         else:
-            seat.update(status="OPEN")
-            print(f"STATUS of Seat {seat.seat_number} {seat.status}")
+            seat.status = "OPEN"
+            seat.save()
+            print(f"STATUS of Seat {seat.seat_number} was changed to {seat.status}")
     except Exception as e:
         print(e)

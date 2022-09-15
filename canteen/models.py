@@ -85,11 +85,21 @@ class Reservation(models.Model):
         active_reservations = Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).select_related("customer")
         print(f"ACTIVE RESERVATIONS: {active_reservations}")
         reservists = [reservation.customer for reservation in active_reservations]
+        active_reservation_ids = [reservation.id for reservation in active_reservations]
         print(f"RESERVISTS: {reservists}")
         if selected_seat.status in ["PENDING", "RESERVED"]:
-            raise ValidationError({"seat": _("The selected seat is already reserved.")})  # The seat you want is already reserved || remove this by showing open seats only
-        elif self.customer in reservists:
-            raise ValidationError({"seat": _("The customer already has an active reservation.")}) # You already have a pending resevation || remove this by disabling reservation when already waiting
+            if not self.id: # New record
+                raise ValidationError({"seat": _("The selected seat is already reserved.")})  # The seat you want is already reserved || remove this by showing open seats only
+            else:
+                if self.id not in active_reservation_ids and self.status in ["PENDING", "ACCEPTED"]:
+                    raise ValidationError({"seat": _("The selected seat is already reserved.")})
+        if self.customer in reservists:
+            if not self.id: # New record
+                raise ValidationError({"customer": _("The customer already has an active reservation.")}) # You already have a pending resevation || remove this by disabling reservation when already waiting
+            else:
+                if self.id not in active_reservation_ids and self.status in ["PENDING", "ACCEPTED"]:
+                    raise ValidationError({"customer": _("The customer already has an active reservation.")})
+        
 
     def __str__(self):
         return f"{self.id}"
