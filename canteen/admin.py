@@ -5,8 +5,8 @@ from .models import *
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("customer", "id")
-    ordering = ("customer",)
+    list_display = ("id", "customer", "cellphone")
+    ordering = ("id",)
     search_fields = (
         "customer__last_name",
         "customer__first_name",
@@ -33,6 +33,15 @@ class ReservationAdmin(admin.ModelAdmin):
         "customer__username",
     )
 
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "product_type", "price")
+    list_filter = ("name", "product_type", "price",)
+    ordering = ("name",)
+    search_fields = (
+        "name",
+    )
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     date_hierarchy = "date_ordered"
@@ -51,4 +60,14 @@ class OrderItemAdmin(admin.ModelAdmin):
     ordering = ("order",)
     search_fields = (
         "product",
+    )
+
+@admin.register(DeliveryAddress)
+class DeliveryAddressAdmin(admin.ModelAdmin):
+    date_hierarchy = "date_added"
+    list_display = ("customer", "order", "date_added")
+    list_filter = ("customer",)
+    ordering = ("order",)
+    search_fields = (
+        "customer",
     )

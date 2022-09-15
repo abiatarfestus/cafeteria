@@ -27,6 +27,16 @@ def validate_cellphone(value):
                 params={'value': value},
             )
 
+def minimum_qantity(value):
+    """
+    Validate that quantity of an order item is not < 1
+    """
+    # print(F"VALUE: {value}")
+    if value < 1:
+        raise ValidationError(
+            _(f"You cannot add an item with 0 quantity."),
+            params={'value': value},
+        )
 
 class Customer(models.Model):
     customer = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
@@ -151,38 +161,50 @@ class Order(models.Model):
     date_ordered = models.DateTimeField(auto_now_add=True)
     delivery = models.BooleanField(default=False)
     complete = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=100, null=True)
+    # transaction_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return str(self.id)
 
-    # @property
-    # def shipping(self):
-    #     shipping = False
-    #     orderitems = self.orderitem_set.all()
-    #     for i in orderitems:
-    #         if i.product.digital == False:
-    #             shipping = True
-    #     return shipping
+    def clean(self):
+        if not self.id:
+            active_orders = Order.objects.filter(complete=False)
+            print(f"ACTIVE ORDERS: {active_orders}")
+            active_orderers = [order.customer for order in active_orders]
+            print(f"ORDERERS: {active_orderers}")
+            print(f"THIS ORDERER: {self.customer}")
+            if self.customer in active_orderers:
+                raise ValidationError({"customer": _("This customer already has an open order.")})
 
-    # @property
-    # def get_cart_total(self):
-    #     orderitems = self.orderitem_set.all()
-    #     total = sum([item.get_total for item in orderitems])
-    #     return total
+    @property
+    def get_order_total(self):
+        order_items = self.order_items
+        total = sum([item.get_total for item in order_items])
+        return total
 
-    # @property
-    # def get_cart_items(self):
-    #     orderitems = self.orderitem_set.all()
-    #     total = sum([item.quantity for item in orderitems])
-        # return total
+    @property
+    def get_order_items(self):
+        order_items = self.order_items
+        total = sum([item.quantity for item in order_items])
+        return total
 
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-    quantity = models.IntegerField(default=0, null=True, blank=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, related_name="order_items")
+    quantity = models.IntegerField(validators=[minimum_qantity], default=1, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "product",
+                    "order",
+                ],
+                name="unique_order_items",
+            )
+        ]
 
     @property
     def get_total(self):
@@ -190,14 +212,11 @@ class OrderItem(models.Model):
         return total
 
 
-# class ShippingAddress(models.Model):
-#     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
-#     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-#     address = models.CharField(max_length=200, null=False)
-#     city = models.CharField(max_length=200, null=False)
-#     state = models.CharField(max_length=200, null=False)
-#     zipcode = models.CharField(max_length=200, null=False)
-#     date_added = models.DateTimeField(auto_now_add=True)
+class DeliveryAddress(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    address = models.CharField(max_length=200, null=False)
+    date_added = models.DateTimeField(auto_now_add=True)
 
-#     def __str__(self):
-#         return self.address
+    def __str__(self):
+        return self.address
