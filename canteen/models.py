@@ -52,7 +52,7 @@ class Seat(models.Model):
     ]
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
     seat_number = models.IntegerField(unique=True, blank=False, null=False)
-    status = models.CharField(max_length=8, choices=SEAT_STATUS, default="OPEN")
+    status = models.CharField(max_length=8, choices=SEAT_STATUS, editable=False, default="OPEN")
 
     def clean(self):
         selected_table = Table.objects.get(id=self.table.id)
@@ -60,8 +60,9 @@ class Seat(models.Model):
         print(f"SELECTED_TABLE: {selected_table}")
         print(f"MAX_SEATS: {selected_table.max_seats}")
         print(f"NUMBER_OF_SEATS: {number_of_seats}")
-        if number_of_seats >= selected_table.max_seats:
-            raise ValidationError({"table": _(f"Table {selected_table.table_number} has reached maximum seats.")})
+        if not self.id:
+            if number_of_seats >= selected_table.max_seats:
+                raise ValidationError({"table": _(f"Table {selected_table.table_number} has reached maximum seats.")})
 
     def __str__(self):
         return f"{self.seat_number}"
