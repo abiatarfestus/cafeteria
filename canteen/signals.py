@@ -23,17 +23,18 @@ from .models import Customer, Reservation, Seat
 #     except Exception as e:
 #         print(e)
 
-@receiver(post_save, sender=User)
-def create_customer(sender, instance, created, **kwargs):
-    if created:
-        Customer.objects.create(customer=instance)
-        # print("CUSTOMER CREATION SIGNAL EXECUTED")
-
-
-@receiver(post_save, sender=User)
-def save_customer(sender, instance, **kwargs):
+@receiver(post_save, sender=Reservation)
+def update_seat_status(sender, instance, created, **kwargs):
     try:
-        instance.customer.save()
-        # print("CUSTOMER SAVE SIGNAL EXECUTED")
+        seat = Seat.objects.get(id=instance.seat)
+        if instance.status == "PENDING":
+            seat.update(status="PENDING")
+            print(f"STATUS of Seat {seat.seat_number} {seat.status}")
+        elif instance.status == "ACCEPTED":
+            seat.update(status="RESERVED")
+            print(f"STATUS of Seat {seat.seat_number} {seat.status}")
+        else:
+            seat.update(status="OPEN")
+            print(f"STATUS of Seat {seat.seat_number} {seat.status}")
     except Exception as e:
         print(e)

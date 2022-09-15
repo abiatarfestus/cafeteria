@@ -52,7 +52,7 @@ class Seat(models.Model):
     ]
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
     seat_number = models.IntegerField(unique=True, blank=False, null=False)
-    reserved = models.CharField(max_length=8, choices=SEAT_STATUS, default="OPEN")
+    status = models.CharField(max_length=8, choices=SEAT_STATUS, default="OPEN")
 
     def clean(self):
         selected_table = Table.objects.get(id=self.table.id)
@@ -86,7 +86,7 @@ class Reservation(models.Model):
         print(f"ACTIVE RESERVATIONS: {active_reservations}")
         reservists = [reservation.customer for reservation in active_reservations]
         print(f"RESERVISTS: {reservists}")
-        if selected_seat.reserved:
+        if selected_seat.status in ["PENDING", "RESERVED"]:
             raise ValidationError({"seat": _("The selected seat is already reserved.")})  # The seat you want is already reserved || remove this by showing open seats only
         elif self.customer in reservists:
             raise ValidationError({"seat": _("The customer already has an active reservation.")}) # You already have a pending resevation || remove this by disabling reservation when already waiting

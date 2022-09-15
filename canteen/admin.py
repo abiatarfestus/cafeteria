@@ -19,8 +19,8 @@ class TableAdmin(admin.ModelAdmin):
 
 @admin.register(Seat)
 class SeatAdmin(admin.ModelAdmin):
-    list_display = ("seat_number", "table", "reserved")
-    list_filter = ("reserved",)
+    list_display = ("seat_number", "table", "status")
+    list_filter = ("status",)
     ordering = ("seat_number",)
 
 @admin.register(Reservation)
