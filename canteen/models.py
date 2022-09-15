@@ -39,7 +39,7 @@ def minimum_qantity(value):
         )
 
 class Customer(models.Model):
-    customer = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
+    customer = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE, related_name="customer")
     cellphone = models.CharField(max_length=10, validators=[validate_cellphone])
 
     def __str__(self):
@@ -177,14 +177,14 @@ class Order(models.Model):
                 raise ValidationError({"customer": _("This customer already has an open order.")})
 
     @property
-    def get_order_total(self):
-        order_items = self.order_items
+    def get_cart_total(self):
+        order_items = self.order_items.all()
         total = sum([item.get_total for item in order_items])
         return total
 
     @property
-    def get_order_items(self):
-        order_items = self.order_items
+    def get_cart_items(self):
+        order_items = self.order_items.all()
         total = sum([item.quantity for item in order_items])
         return total
 
