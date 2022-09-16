@@ -126,9 +126,9 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     product_type = models.CharField(max_length=5, choices=PRODUCT_TYPES)
     price = models.FloatField()
-    # image = models.ImageField(
-    #     default="product_pics/placeholder.png", upload_to="product_pics"
-    # )
+    image = models.ImageField(
+        default="product_pics/placeholder.png", upload_to="product_pics"
+    )
 
     class Meta:
         constraints = [
@@ -145,13 +145,13 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    # @property
-    # def imageURL(self):
-    #     try:
-    #         url = self.image.url
-    #     except:
-    #         url = ""
-    #     return url
+    @property
+    def imageURL(self):
+        try:
+            url = self.image.url
+        except:
+            url = ""
+        return url
 
 
 class Order(models.Model):
