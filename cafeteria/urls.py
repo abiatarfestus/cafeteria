@@ -23,6 +23,7 @@ urlpatterns = [
     path("", views.canteen, name="canteen"),
     path('admin/', admin.site.urls),
     path("canteen", include("canteen.urls")),
-    # path("users", include("users.urls")),
+    path("users", include("users.urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

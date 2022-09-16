@@ -16,7 +16,6 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .tokens import account_activation_token
-from dictionary.classes import HistoryRecord
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 
@@ -24,50 +23,31 @@ def register(request):
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            """Begin reCAPTCHA validation"""
-            recaptcha_response = request.POST.get("g-recaptcha-response")
-            url = "https://www.google.com/recaptcha/api/siteverify"
-            values = {
-                "secret": settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-                "response": recaptcha_response,
-            }
-            data = urllib.parse.urlencode(values).encode()
-            req = urllib.request.Request(url, data=data)
-            response = urllib.request.urlopen(req)
-            result = json.loads(response.read().decode())
-            """ End reCAPTCHA validation """
-            if result["success"]:
-                user = form.save(commit=False)
-                user.is_active = False  # Deactivate account till it is confirmed
-                user.save()
-                current_site = get_current_site(request)
-                subject = "Activate Your Oshinglish Account"
-                message = render_to_string(
-                    "registration/account_activation_email.html",
-                    {
-                        "user": user,
-                        "domain": current_site.domain,
-                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                        "token": account_activation_token.make_token(user),
-                    },
-                )
-                email_from = settings.DEFAULT_FROM_EMAIL
-                recipient_list = [user.email]
-                send_mail(subject, message, email_from, recipient_list)
-                messages.success(
-                    request, ("Please Confirm your email to complete registration.")
-                )
-                # return redirect(reverse("index"))
-                return redirect("login")
-            else:
-                messages.error(request, "Invalid reCAPTCHA. Please try again.")
+            user = form.save(commit=False)
+            user.is_active = False  # Deactivate account till it is confirmed
+            user.save()
+            current_site = get_current_site(request)
+            subject = "Activate Your Oshinglish Account"
+            message = render_to_string(
+                "registration/account_activation_email.html",
+                {
+                    "user": user,
+                    "domain": current_site.domain,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": account_activation_token.make_token(user),
+                },
+            )
+            email_from = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user.email]
+            send_mail(subject, message, email_from, recipient_list)
+            messages.success(
+                request, ("Please Confirm your email to complete registration.")
+            )
+            # return redirect(reverse("index"))
+            return redirect("login")
     else:
         form = UserRegisterForm()
     return render(request, "users/register.html", {"form": form})
-
-
-# Update it here
-contribution = HistoryRecord()
 
 
 @login_required
@@ -88,7 +68,6 @@ def profile(request):
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
-        "user_contribution": contribution.get_user_contribution(request.user),
     }
     return render(request, "users/profile.html", context)
 

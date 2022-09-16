@@ -2,7 +2,7 @@
 {% load static %}
 <html>
 <head>
-	<title>Unam Canteen</title>
+	<title>Unam Staff Canteen</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
 
@@ -36,7 +36,7 @@
 <body>
 
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	  <a class="navbar-brand" href="{% url 'canteen' %}">Unam</a>
+	  <a class="navbar-brand" href="{% url 'canteen' %}">Staff Canteen</a>
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 	    <span class="navbar-toggler-icon"></span>
 	  </button>
@@ -44,19 +44,33 @@
 	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 	    <ul class="navbar-nav mr-auto">
 	      <li class="nav-item active">
-	        <a class="nav-link" href="{% url 'canteen' %}">Canteen <span class="sr-only">(current)</span></a>
+	        <a class="nav-link" href="{% url 'canteen' %}">Reservation <span class="sr-only">(current)</span></a>
+	      </li>
+		  <li class="nav-item active">
+	        <a class="nav-link" href="{% url 'canteen' %}">Order <span class="sr-only"></span></a>
 	      </li>
 	 
 	    </ul>
-	    <div class="form-inline my-2 my-lg-0">
-	     	<a href="#"class="btn btn-warning">Login</a>
-	     	
-	     	<a href="{% url 'canteen:cart' %}">
-	    		<img  id="cart-icon" src="{% static 'images/cart.png' %}">
-	    	</a>
-	    	<p id="cart-total">{{cartItems}}</p>
-
-	    </div>
+		<div class="container-fluid  justify-content-end">
+			{% if user.is_authenticated %}
+            <ul class="nav">
+              <li class="nav-item"><a class="nav-link" href="{% url 'users:profile' %}"><img src="{{ user.profile.image.url }}" class="rounded-circle" width="45" height="45" alt="..."> </a></li>
+			  <li class="nav-item"><a class="nav-link blend" href="{% url 'users:profile' %}" aria-disabled="true">{{ user.get_username }}</a></li>
+              <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">|</a></li>
+              <li class="nav-item"><a class="nav-link blend" a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+            </ul>
+			<a href="{% url 'canteen:cart' %}">
+				<img id="cart-icon" src="{% static 'images/cart.png' %}">
+			</a>
+			<p id="cart-total">{{cartItems}}</p>
+			{% else %}
+			<ul class="nav">
+				<li class="nav-item"><a class="nav-link blend" href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+				<li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">|</a></li>
+				<li class="nav-item"><a class="nav-link blend" href="{% url 'users:register' %}">Register</a></li>
+			  </ul>
+			  {% endif %}
+          </div>
 	  </div>
 	</nav>
 
