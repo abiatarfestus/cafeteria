@@ -5,7 +5,7 @@ from .models import *
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("id", "customer", "cellphone")
+    list_display = ("id", "customer")
     ordering = ("id",)
     search_fields = (
         "customer__last_name",

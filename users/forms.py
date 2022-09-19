@@ -70,9 +70,27 @@ class UserUpdateForm(ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ["image"]
+        fields = ["cellphone", "image"]
         widgets = {
+            "cellphone": forms.TextInput(
+                attrs={"class": "form-control form-control-lg mb-2"}
+            ),
             "image": forms.FileInput(
                 attrs={"class": "form-control form-control-lg mb-2"}
-            )
+            ),
         }
+
+        # def clean(self):
+        #     super(ProfileUpdateForm, self).clean()
+        #     cellphone = self.cleaned_data.get('cellphone')
+        #     # image = self.cleaned_data.get('image')
+        #     if len(cellphone)<10:
+        #         self._errors['cellphone'] = self.error_class([
+        #             'Cellphone number must have 10 digits.'])
+        #     elif cellphone[:3] not in ["081", "085"]:
+        #         self._errors['cellphone'] = self.error_class([
+        #             "A valid cellphone number must start with '081' or '085'"])
+        #     for digit in cellphone:
+        #         self._errors['cellphone'] = self.error_class([
+        #             "Cellphone number must contain digits only."])
+        #     return self.cleaned_data

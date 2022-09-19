@@ -1,0 +1,10 @@
+{% autoescape off %}
+Dear Admin,
+
+You're receiving this email because someone claiming to be a Unam staff member registered as a user at Unam Online Staff Canteen. To activate this account, please click on the link below:
+
+http://{{ domain }}{% url 'users:activate' uidb64=uid token=token %}
+
+Ignore this email if you do not wish to activate with this account.
+
+{% endautoescape %}

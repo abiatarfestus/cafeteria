@@ -40,7 +40,6 @@ def minimum_qantity(value):
 
 class Customer(models.Model):
     customer = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE, related_name="customer")
-    cellphone = models.CharField(max_length=10, validators=[validate_cellphone])
 
     def __str__(self):
         return f"{self.customer.username}"

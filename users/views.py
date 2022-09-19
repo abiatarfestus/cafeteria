@@ -31,23 +31,26 @@ def register(request):
             message = render_to_string(
                 "registration/account_activation_email.html",
                 {
-                    "user": user,
                     "domain": current_site.domain,
                     "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                     "token": account_activation_token.make_token(user),
                 },
             )
             email_from = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [user.email]
+            admin = "abiatarfestus@outlook.com"
+            recipient_list = [admin]
             send_mail(subject, message, email_from, recipient_list)
             messages.success(
-                request, ("Please Confirm your email to complete registration.")
+                request, ("Registration completed successfully!")
             )
             # return redirect(reverse("index"))
-            return redirect("login")
+            return redirect("users:confirmation")
     else:
         form = UserRegisterForm()
     return render(request, "users/register.html", {"form": form})
+
+def confirmation(request):
+    return render(request, "users/registration_confirmation.html", {})
 
 
 @login_required
@@ -62,13 +65,14 @@ def profile(request):
             profile_form.save()
             messages.success(request, f"Your account has been updated!")
             return redirect("users:profile")  # Redirect back to profile page
-    else:
-        user_form = UserUpdateForm(instance=request.user)
-        profile_form = ProfileUpdateForm(instance=request.user.profile)
+        else:
+            messages.warning(request, f"Profile not updated! Please correct the errors shown below.")
+    user_form = UserUpdateForm(instance=request.user)
+    profile_form = ProfileUpdateForm(instance=request.user.profile)
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
-    }
+        }
     return render(request, "users/profile.html", context)
 
 
@@ -84,8 +88,8 @@ class ActivateAccount(View):
             user.is_active = True
             # user.profile.email_confirmed = True
             user.save()
-            login(request, user)
-            messages.success(request, ("Your account has been confirmed."))
+            # login(request, user)
+            messages.success(request, ("The account has been activated."))
             return redirect("index")
         else:
             messages.warning(
