@@ -31,7 +31,7 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE
     )  # Delete profile when user is deleted
-    cellphone = models.CharField(max_length=10, validators=[validate_cellphone])
+    cellphone = models.CharField(max_length=10, null=True, validators=[validate_cellphone])
     image = ResizedImageField(
         default="profile_pics/default.png",
         quality=100,

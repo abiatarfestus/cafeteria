@@ -6,9 +6,12 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
 
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<!-- <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg"> -->
+	<link rel="icon" type="image/png" href="/static/images/favicon.ico">
 
 	<script type="text/javascript">
 		var user = '{{request.user}}'
@@ -73,13 +76,25 @@
           </div>
 	  </div>
 	</nav>
+	<br>
+	<div class="container">
+		<!-- Bootstrap-formatted messages -->
+		{% if messages %}
+		{% for message in messages %}
+		<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+		  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+		  </button>
+		  {{ message }}
+		</div>
+		{% endfor %}
+		{% endif %}
 
      <div class="container">
             <br>
             {% block content %}
 
 
-            {% endblock content %}
+            {% endblock %}
          </div>
 
 

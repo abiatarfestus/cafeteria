@@ -1,7 +1,3 @@
-import json
-import urllib.request
-import urllib.parse
-from django.conf import settings
 from django.contrib import messages
 from django.views.generic import View
 from django.contrib.auth import login
@@ -49,8 +45,9 @@ def register(request):
         form = UserRegisterForm()
     return render(request, "users/register.html", {"form": form})
 
+
 def confirmation(request):
-    return render(request, "users/registration_confirmation.html", {})
+    return render(request, "registration/registration_confirmation.html", {})
 
 
 @login_required
@@ -63,16 +60,17 @@ def profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, f"Your account has been updated!")
+            messages.success(request, "Your account has been updated!")
+            print("SUCCESS")
             return redirect("users:profile")  # Redirect back to profile page
         else:
-            messages.warning(request, f"Profile not updated! Please correct the errors shown below.")
+            messages.warning(request, "Profile not updated! Please correct the errors shown below.")
+            print("FAILURE")
+            context = {"user_form": user_form,"profile_form": profile_form}
+            return render(request, "users/profile.html", context)
     user_form = UserUpdateForm(instance=request.user)
     profile_form = ProfileUpdateForm(instance=request.user.profile)
-    context = {
-        "user_form": user_form,
-        "profile_form": profile_form,
-        }
+    context = {"user_form": user_form, "profile_form": profile_form}
     return render(request, "users/profile.html", context)
 
 
@@ -86,11 +84,23 @@ class ActivateAccount(View):
 
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
-            # user.profile.email_confirmed = True
             user.save()
-            # login(request, user)
+            current_site = get_current_site(request)
+            username = user.username
+            subject = "Account activated"
+            message = render_to_string(
+                "registration/account_activated.html",
+                {
+                    "domain": current_site.domain,
+                    "user": username,
+                },
+            )
+            email_from = settings.DEFAULT_FROM_EMAIL
+            admin = "abiatarfestus@outlook.com"
+            recipient_list = [admin]
+            send_mail(subject, message, email_from, recipient_list)
             messages.success(request, ("The account has been activated."))
-            return redirect("index")
+            return redirect("canteen")
         else:
             messages.warning(
                 request,
@@ -98,4 +108,4 @@ class ActivateAccount(View):
                     "The confirmation link was invalid, possibly because it has already been used."
                 ),
             )
-            return redirect("index")
+            return redirect("canteen")

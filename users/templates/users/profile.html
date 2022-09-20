@@ -1,11 +1,5 @@
 {% extends 'canteen/main.html' %}
-
-{% block welcome %}
-<br>
-<h2 class="account-heading">{{ user.username }}</h2>
-<p class="text-secondary">{{ user.email }}</p>{% endblock %}
-
-{% block content%}
+{% block content %}
 <div class="content-section">
   <div class="media">
     <img class="rounded-circle account-img mt-3 mb-3" src="{{ user.profile.image.url }}">
@@ -21,8 +15,36 @@
   {% csrf_token %}
   <fieldset class="form-group">
     <legend class="border-bottom mb-4">Profile Info</legend>
-    {{ user_form }} <!-- User form -->
-    {{ profile_form }} <!-- Profile form -->
+    {% for field in user_form %}
+      <div class="fieldWrapper">
+          {% if field.errors %}
+          <div class="alert alert-warning" role="alert">
+              {{ field.errors }}
+          </div>
+          {% endif %}
+          {{ field.label }}
+          {{ field }}
+          {% if field.help_text %}
+          <p class="help">{{ field.help_text|safe }}</p>
+          {% endif %}
+      </div>
+      {% endfor %}
+      {% for field in profile_form %}
+      <div class="fieldWrapper">
+          {% if field.errors %}
+          <div class="alert alert-warning" role="alert">
+              {{ field.errors }}
+          </div>
+          {% endif %}
+          {{ field.label }}
+          {{ field }}
+          {% if field.help_text %}
+          <p class="help">{{ field.help_text|safe }}</p>
+          {% endif %}
+      </div>
+      {% endfor %}  
+    <!-- {{ user_form }} User form
+    {{ profile_form }} Profile form -->
   </fieldset>
   <div class="form-group">
     <button class="btn btn-outline-info" type="submit">Update</button>
