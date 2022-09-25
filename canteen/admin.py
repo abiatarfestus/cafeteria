@@ -45,8 +45,8 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     date_hierarchy = "date_ordered"
-    list_display = ("id", "customer", "delivery", "complete", "date_ordered")
-    list_filter = ("delivery", "complete", "date_ordered",)
+    list_display = ("id", "transaction_id", "customer", "delivery", "submitted", "status", "date_ordered",)
+    list_filter = ("delivery", "submitted", "date_ordered",)
     ordering = ("customer",)
     search_fields = (
         "customer",
@@ -65,9 +65,9 @@ class OrderItemAdmin(admin.ModelAdmin):
 @admin.register(DeliveryAddress)
 class DeliveryAddressAdmin(admin.ModelAdmin):
     date_hierarchy = "date_added"
-    list_display = ("customer", "order", "date_added")
-    list_filter = ("customer",)
-    ordering = ("order",)
+    list_display = ("user", "address", "date_added", "date_modified")
+    list_filter = ("user",)
+    ordering = ("user",)
     search_fields = (
-        "customer",
+        "user",
     )

@@ -5,24 +5,30 @@ from django.contrib.auth.models import (
     User,
 )  # Import the built-in User model, which is a sender
 from django.dispatch import receiver  # Import the receiver
-from .models import Customer, Reservation, Seat
+from .models import Customer, DeliveryAddress, Reservation, Seat
 
-
+#----CREATE AND UPDATE CUSTOMER----#
 @receiver(post_save, sender=User)
 def create_customer(sender, instance, created, **kwargs):
     if created:
-        Customer.objects.create(customer=instance)
-        # print("CUSTOMER CREATION SIGNAL EXECUTED")
+        new_customer = Customer.objects.create(customer=instance)
+        try:
+            new_customer.save()
+        except Exception as e:
+            print(e)
 
-
+#----CREATE AND UPDATE CUSTOMER DELIVERY ADDRESS----#
 @receiver(post_save, sender=User)
-def save_customer(sender, instance, **kwargs):
-    try:
-        instance.customer.save()
-        # print("CUSTOMER SAVE SIGNAL EXECUTED")
-    except Exception as e:
-        print(e)
+def create_address(sender, instance, created, **kwargs):
+    print("ENTERED CREATE ADDRESS")
+    if created:
+        new_address = DeliveryAddress.objects.create(user=instance)
+        try:
+            new_address.save()
+        except Exception as e:
+            print(e)
 
+#----UPDATE SEAT STATUS----#
 @receiver(post_save, sender=Reservation)
 def update_seat_status(sender, instance, created, **kwargs):
     try:

@@ -11,12 +11,17 @@ from .models import Profile
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(user=instance)
+        new_profile = Profile.objects.create(user=instance)
+        try:
+            new_profile.save()
+        except Exception as e:
+            print(e)
 
 
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    try:
-        instance.profile.save()
-    except Exception as e:
-        print(e)
+# @receiver(post_save, sender=User)
+# def save_profile(sender, instance, **kwargs):
+#     print("IN SAVE PROFILE")
+#     try:
+#         instance.profile.save()
+#     except Exception as e:
+#         print(e)

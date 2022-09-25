@@ -27,6 +27,6 @@ urlpatterns = [
     path("canteen/", include("canteen.urls")),
     path("users/", include("users.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
-    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img/favicon.ico'))),
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('images/favicon.ico'))),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

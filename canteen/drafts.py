@@ -34,3 +34,20 @@
     #     elif self.customer in reservists:
     #         return # You already have a pending resevation || remove this by disabling reservation when already waiting
     #     super(Reservation, self).save(*args, **kwargs)
+
+    
+    # <div class="form-check form-check-inline">
+    #     <input class="form-check-input" type="radio" name="inlineRadioOptions" id="delivery-yes" value="Yes">
+    #     <label class="form-check-label" for="delivery-yes">Yes</label>
+    #     </div>
+    #     <div class="form-check form-check-inline">
+    #     <input class="form-check-input" type="radio" name="inlineRadioOptions" id="delivery-no" value="No">
+    #     <label class="form-check-label" for="delivery-no">No</label>
+    # </div>
+
+    
+#     <br>
+#     <div class="form-field">
+#         <input class="form-control" type="text" name="address" placeholder="Delivery address...">
+#     </div>
+# </div>

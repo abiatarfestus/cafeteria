@@ -83,7 +83,7 @@ class Reservation(models.Model):
         ("DECLINED", "Declined"),
         ("EXPIRED", "Expired"),
     ]
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="reservations")
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
     status = models.CharField(max_length=8, choices=RESERVATION_STATUS, default="PENDING")
     time_reserved = models.DateTimeField(auto_now_add=True)
@@ -154,20 +154,27 @@ class Product(models.Model):
 
 
 class Order(models.Model):
+    ORDER_STATUS = [
+        ("OPEN", "Open"),
+        ("SUBMITTED", "Submitted"),
+        ("CANCELLED", "Cancelled"),
+        ("COMPLETED", "Completed"),
+    ]
     customer = models.ForeignKey(
-        Customer, on_delete=models.SET_NULL, null=True, blank=True
+        Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders"
     )
     date_ordered = models.DateTimeField(auto_now_add=True)
     delivery = models.BooleanField(default=False)
-    complete = models.BooleanField(default=False)
-    # transaction_id = models.CharField(max_length=100, null=True)
+    submitted = models.BooleanField(default=False)
+    status = models.CharField(max_length=9, choices=ORDER_STATUS, default="OPEN")
+    transaction_id = models.CharField(max_length=100, null=True)
 
     def __str__(self):
         return str(self.id)
 
     def clean(self):
         if not self.id:
-            active_orders = Order.objects.filter(complete=False)
+            active_orders = Order.objects.filter(submitted=False)
             print(f"ACTIVE ORDERS: {active_orders}")
             active_orderers = [order.customer for order in active_orders]
             print(f"ORDERERS: {active_orderers}")
@@ -191,7 +198,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, related_name="order_items")
-    quantity = models.IntegerField(validators=[minimum_qantity], default=1, null=True, blank=True)
+    quantity = models.IntegerField(null=True, blank=True, default=0)
     date_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -212,10 +219,11 @@ class OrderItem(models.Model):
 
 
 class DeliveryAddress(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-    address = models.CharField(max_length=200, null=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name="address")
+    # order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    address = models.CharField(max_length=200, null=True, blank=True, verbose_name="Delivery Address", help_text="Enter your delivery address on campus, e.g., office No. & office location")
     date_added = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.address

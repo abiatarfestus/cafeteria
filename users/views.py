@@ -13,6 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from canteen.forms import AddressUpdateForm
 
 
 def register(request):
@@ -57,20 +58,21 @@ def profile(request):
         profile_form = ProfileUpdateForm(
             request.POST, request.FILES, instance=request.user.profile
         )
-        if user_form.is_valid() and profile_form.is_valid():
+        address_form = AddressUpdateForm(request.POST, instance=request.user.address)
+        if user_form.is_valid() and profile_form.is_valid() and address_form.is_valid:
             user_form.save()
             profile_form.save()
-            messages.success(request, "Your account has been updated!")
-            print("SUCCESS")
+            address_form.save()
+            messages.success(request, "Your profile has been updated!")
             return redirect("users:profile")  # Redirect back to profile page
         else:
             messages.warning(request, "Profile not updated! Please correct the errors shown below.")
-            print("FAILURE")
-            context = {"user_form": user_form,"profile_form": profile_form}
+            context = {"user_form": user_form, "profile_form": profile_form, "address_form": address_form}
             return render(request, "users/profile.html", context)
     user_form = UserUpdateForm(instance=request.user)
     profile_form = ProfileUpdateForm(instance=request.user.profile)
-    context = {"user_form": user_form, "profile_form": profile_form}
+    address_form = AddressUpdateForm(instance=request.user.address)
+    context = {"user_form": user_form, "profile_form": profile_form, "address_form": address_form}
     return render(request, "users/profile.html", context)
 
 
