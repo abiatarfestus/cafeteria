@@ -1,6 +1,12 @@
 {% extends 'canteen/main.html' %}
 {% load static %}
+{% block welcome %}
+<h1>Welcome to Unam Staff Cafeteria</h1>
+<h5>-Reserve your seat, and order meals without stepping a foot out of your office-</h5>
+<hr>
+{% endblock %}
 {% block content %}
+<br>
 <div class="container">
     <div class="row row-cols-1 row-cols-md-2">
       <div class="col">
@@ -10,7 +16,7 @@
           <div class="card-body">
             <h2 class="card-title">Reservation</h2>
             <!-- <p class="card-text text-muted h6">Post author | created on</p> -->
-            <p class="card-text">Avoid surprise of popping into our cafeteria and find no open seat. 
+            <p class="card-text">Avoid the surprise of popping into our cafeteria and find no open seat. 
                 Check out our open seats online and reserve one for yourself. Your submitted reservation will wait for admin's approval.
             </p>
             <a href="{% url 'canteen:reservations' %}" class="btn btn-primary">Go to Reservations &rarr;</a>
@@ -34,4 +40,9 @@
       </div>
     </div>
   </div>
+  <br>
+  <hr>
+  <div class="container page-headings">
+  <h2>-Here to serve you-</h2>
+</div>
   {% endblock content %}

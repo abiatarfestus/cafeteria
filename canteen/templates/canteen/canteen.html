@@ -1,5 +1,9 @@
 {% extends 'canteen/main.html' %}
 {% load static %}
+{% block welcome %}
+<h3>Make your order here</h3>
+<hr>
+{% endblock %}
 {% block content %}
 	<div class="row">
 		{% for product in products %}
