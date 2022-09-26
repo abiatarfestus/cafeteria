@@ -1,10 +1,14 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.contrib import messages
 import json
 import datetime
 from .models import *
-from .forms import OrderUpdateForm, AddressUpdateForm
+from django.views import generic
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.contrib import messages
+from django.views.generic.edit import CreateView
+from .forms import OrderUpdateForm, AddressUpdateForm, ReservationForm
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 # from .utils import cartData
 from .utils import cookieCart, cartData, guestOrder
 
@@ -109,3 +113,36 @@ def processOrder(request):
     order.save()
 
     return JsonResponse("Payment submitted..", safe=False)
+
+
+class ReservationCreateView(
+    LoginRequiredMixin, SuccessMessageMixin, CreateView
+):
+    form_class = ReservationForm
+    model = Reservation
+    extra_context = {
+        "operation": "Reserve your seat in the Cafeteria",
+    }
+    success_message = f"Reservation of Seat __ was successfully submitted!"
+
+    def form_valid(self, form):
+        form.instance.customer = self.request.user.customer
+        return super().form_valid(form)
+
+# List View
+# Templates for displaying List and Detail views
+list_view = "canteen/list_view.html"
+detail_view = "canteen/detail_view.html"
+
+class ReservationListView(generic.ListView):
+    paginate_by = 10
+    model = Reservation
+    template_name = list_view
+
+    def get_queryset(self):
+        return Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).order_by("customer")
+
+    def get_context_data(self, **kwargs):
+        context = super(ReservationListView, self).get_context_data(**kwargs)
+        context["heading"] = "List of Active Reservations"
+        return context

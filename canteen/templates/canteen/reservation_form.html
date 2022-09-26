@@ -1,0 +1,10 @@
+{% extends 'canteen/main.html' %}
+{% load static %}
+{% block content %}
+<br>
+<h3>{{ operation }}</h3>
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-primary btn-lg" value="Reserve">
+</form>
+{% endblock content %}

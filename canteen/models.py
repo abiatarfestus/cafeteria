@@ -103,7 +103,7 @@ class Reservation(models.Model):
             else:
                 if self.id not in active_reservation_ids and self.status in ["PENDING", "ACCEPTED"]:
                     raise ValidationError({"seat": _("The selected seat is already reserved.")})
-        if self.customer in reservists:
+        if reservists and self.customer in reservists:
             if not self.id: # New record
                 raise ValidationError({"customer": _("The customer already has an active reservation.")}) # You already have a pending resevation || remove this by disabling reservation when already waiting
             else:
