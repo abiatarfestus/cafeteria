@@ -9,8 +9,10 @@ from django.views.generic.edit import CreateView
 from .forms import OrderUpdateForm, AddressUpdateForm, ReservationForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-# from .utils import cartData
 from .utils import cookieCart, cartData, guestOrder
+
+def home(request):
+    return render(request, "canteen/home.html",{})
 
 
 def canteen(request):

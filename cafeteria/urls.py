@@ -22,7 +22,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
 
 urlpatterns = [
-    path("", views.canteen, name="canteen"),
+    path("", views.home, name="home"),
     path('admin/', admin.site.urls),
     path("canteen/", include("canteen.urls")),
     path("users/", include("users.urls")),

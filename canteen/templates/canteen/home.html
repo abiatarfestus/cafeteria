@@ -1,0 +1,37 @@
+{% extends 'canteen/main.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-2">
+      <div class="col">
+        <div class="card border-primary mt-2 mb-2">
+          <div class="card-header">Seat Reservation</div>
+          <!-- <img src="" class="card-img-top" alt="Post Image"> -->
+          <div class="card-body">
+            <h2 class="card-title">Reservation</h2>
+            <!-- <p class="card-text text-muted h6">Post author | created on</p> -->
+            <p class="card-text">Avoid surprise of popping into our cafeteria and find no open seat. 
+                Check out our open seats online and reserve one for yourself. Your submitted reservation will wait for admin's approval.
+            </p>
+            <a href="{% url 'canteen:reservations' %}" class="btn btn-primary">Go to Reservations &rarr;</a>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card border-warning mt-2 mb-2">
+          <div class="card-header">Meal Order</div>
+          <!-- <img src="" class="card-img-top" alt="Publication Image"> -->
+          <div class="card-body">
+            <h2 class="card-title">Order</h2>
+            <!-- <p class="card-text text-muted h6">Publication Author | created on</p> -->
+            <p class="card-text">Check out our collection of simple, yet tasty, affordable food and non-alcoholic drinks.
+                Can't find an open seat in the cafeteria? Add delivery to your oder, and we'll bring it to your doorstep.
+            </p>
+            <a href="{% url 'canteen:canteen' %}" class="btn btn-primary">Order Now &rarr;</a>
+          </div>
+        </div>
+      </div>      
+      </div>
+    </div>
+  </div>
+  {% endblock content %}
