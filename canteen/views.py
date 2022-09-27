@@ -6,15 +6,17 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
 from django.views.generic.edit import CreateView
+from django.contrib.auth.decorators import login_required
 from .forms import OrderUpdateForm, AddressUpdateForm, ReservationForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from .utils import cookieCart, cartData, guestOrder
+from .utils import cartData
 
 def home(request):
     return render(request, "canteen/home.html",{})
 
 
+@login_required
 def canteen(request):
     data = cartData(request)
 
@@ -27,6 +29,7 @@ def canteen(request):
     return render(request, "canteen/canteen.html", context)
 
 
+@login_required
 def cart(request):
     data = cartData(request)
 
@@ -38,6 +41,7 @@ def cart(request):
     return render(request, "canteen/cart.html", context)
 
 
+@login_required
 def checkout(request):
     data = cartData(request)
 
@@ -62,6 +66,7 @@ def checkout(request):
     return render(request, "canteen/checkout.html", context)
 
 
+@login_required
 def updateItem(request):
     data = json.loads(request.body)
     productId = data["productId"]
@@ -88,6 +93,7 @@ def updateItem(request):
     return JsonResponse("Item was added", safe=False)
 
 
+@login_required
 def processOrder(request):
     transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
@@ -122,13 +128,18 @@ class ReservationCreateView(
 ):
     form_class = ReservationForm
     model = Reservation
-    extra_context = {
-        "operation": "Reserve your seat in the Cafeteria",
-    }
     success_message = f"Reservation of Seat __ was successfully submitted!"
+    def get_context_data(self, **kwargs):
+        data = cartData(self.request)
+        cartItems = data["cartItems"]
+        context = super(ReservationCreateView, self).get_context_data(**kwargs)
+        context["heading"] = "Reserve your seat in the Cafeteria"
+        context["cartItems"] = cartItems
+        return context
 
     def form_valid(self, form):
         form.instance.customer = self.request.user.customer
+        print(f"CUSTOMERCUSTOMER: {form.instance.customer}")
         return super().form_valid(form)
 
 # List View
@@ -136,7 +147,7 @@ class ReservationCreateView(
 list_view = "canteen/list_view.html"
 detail_view = "canteen/detail_view.html"
 
-class ReservationListView(generic.ListView):
+class ReservationListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
     model = Reservation
     template_name = list_view
@@ -145,6 +156,9 @@ class ReservationListView(generic.ListView):
         return Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).order_by("customer")
 
     def get_context_data(self, **kwargs):
+        data = cartData(self.request)
+        cartItems = data["cartItems"]
         context = super(ReservationListView, self).get_context_data(**kwargs)
         context["heading"] = "List of Active Reservations"
+        context["cartItems"] = cartItems
         return context

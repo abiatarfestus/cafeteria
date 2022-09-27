@@ -22,6 +22,15 @@ class OrderUpdateForm(forms.ModelForm):
         }
 
 class ReservationForm(forms.ModelForm):
+    # customer = forms.ModelChoiceField(
+    #     queryset=Customer.objects.get(id=self.request.user.customer_id),
+    #     empty_label="Select the seat",
+    #     widget=forms.Select(
+    #         attrs={
+    #             "class": "form-control form-control-lg mb-2"
+    #         }
+    #     ),
+    # )
     seat = forms.ModelChoiceField(
         queryset=Seat.objects.filter(status="OPEN").order_by("seat_number"),
         empty_label="Select the seat",
