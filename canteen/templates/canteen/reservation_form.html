@@ -6,8 +6,18 @@
 <hr>
 {% endblock %}
 {% block content %}
+{% if request.user.customer in active_reservists %}
+<div class="alert alert-danger" role="alert">
+    Sorry, you already have an active reservation. If your reservation status has been Pending for too long, please contact the canteen staff.
+</div>
+{% elif open_seats == 0 %}
+<div class="alert alert-info" role="alert">
+    There are currently no open seats. Please, check again later.
+</div>
+{% else %}
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" class="btn btn-primary btn-lg" value="Reserve">
 </form>
+{% endif %}
 {% endblock content %}

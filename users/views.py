@@ -102,7 +102,7 @@ class ActivateAccount(View):
             recipient_list = [admin]
             send_mail(subject, message, email_from, recipient_list)
             messages.success(request, ("The account has been activated."))
-            return redirect("canteen")
+            return redirect("home")
         else:
             messages.warning(
                 request,
@@ -110,4 +110,4 @@ class ActivateAccount(View):
                     "The confirmation link was invalid, possibly because it has already been used."
                 ),
             )
-            return redirect("canteen")
+            return redirect("home")

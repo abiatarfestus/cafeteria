@@ -5,6 +5,7 @@ from django.views import generic
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
+from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from .forms import OrderUpdateForm, AddressUpdateForm, ReservationForm
@@ -129,18 +130,34 @@ class ReservationCreateView(
     form_class = ReservationForm
     model = Reservation
     success_message = f"Reservation of Seat __ was successfully submitted!"
+    success_url = reverse_lazy("canteen:reservations")
+    success_message = (
+        "Reservation sent successfully! You will receive a notification once your reservation is processed."
+    )
+
+    def get_active_reservists(self):
+        active_reservations = Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).select_related("customer")
+        active_reservists = [reservation.customer for reservation in active_reservations]
+        # active_reservation_ids = [reservation.id for reservation in active_reservations]
+        return active_reservists
+
+    def num_of_open_seats(self):
+        return Seat.objects.filter(status="OPEN").count()
+
     def get_context_data(self, **kwargs):
         data = cartData(self.request)
         cartItems = data["cartItems"]
         context = super(ReservationCreateView, self).get_context_data(**kwargs)
         context["heading"] = "Reserve your seat in the Cafeteria"
+        context["active_reservists"] = self.get_active_reservists()
+        context["open_seats"] = self.num_of_open_seats()
         context["cartItems"] = cartItems
         return context
 
-    def form_valid(self, form):
-        form.instance.customer = self.request.user.customer
-        print(f"CUSTOMERCUSTOMER: {form.instance.customer}")
-        return super().form_valid(form)
+    def get_initial(self):
+        return {'customer': self.request.user.customer}
+
+    
 
 # List View
 # Templates for displaying List and Detail views
@@ -155,10 +172,14 @@ class ReservationListView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         return Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).order_by("customer")
 
+    def num_of_open_seats(self):
+        return Seat.objects.filter(status="OPEN").count()
+
     def get_context_data(self, **kwargs):
         data = cartData(self.request)
         cartItems = data["cartItems"]
         context = super(ReservationListView, self).get_context_data(**kwargs)
         context["heading"] = "List of Active Reservations"
+        context["open_seats"] = self.num_of_open_seats()
         context["cartItems"] = cartItems
         return context

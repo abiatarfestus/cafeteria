@@ -6,6 +6,7 @@
 {% endblock %}
 {% block content %}
 <br>
+<h4>Number of Open Seats: <span class="badge badge-info">{{ open_seats}}</span></h4>
 <table class="table table-hover">
     <thead class="thead-light">
       <tr>
@@ -14,16 +15,53 @@
         <th scope="col">Seat</th>
         <th scope="col">Status</th>
         <th scope="col">Time Reserved</th>
+        {% if user.is_staff %}
+        <th scope="col">Accept</th>
+        <th scope="col">Decline</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
       {% for reservation in reservation_list %}
       <tr>
         <th scope="row">{{forloop.counter}}</th>
-        <td>{{reservation.customer}}</td>
+        <td>{{reservation.customer}}
+          {% if user.customer.id == reservation.customer.id %}
+          <button type="button" class="btn btn-outline-danger ml-3" data-toggle="modal"
+                        data-target="#exitQueueAlert">
+                        Cancel
+                    </button>
+            {% endif %}
+        </td>
         <td>{{reservation.seat}}</td>
         <td>{{reservation.status}}</td>
         <td>{{reservation.time_reserved}}</td>
+        {% if user.is_staff %}
+        <td>{% if reservation.status == "PENDING" %}
+          <button type="button" class="btn btn-outline-success" data-toggle="modal"
+                        data-target="#exitQueueAlert">
+                        Accept
+                    </button>
+            {% else %}
+            <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
+                        data-target="#exitQueueAlert" disabled>
+                        Accept
+                    </button>
+            {% endif %}
+        </td>
+        <td>{% if reservation.status == "PENDING" %}
+          <button type="button" class="btn btn-outline-danger" data-toggle="modal"
+                        data-target="#exitQueueAlert">
+                        Decline
+                    </button>
+            {% else %}
+            <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
+                        data-target="#exitQueueAlert" disabled>
+                        Decline
+                    </button>
+            {% endif %}
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
@@ -48,5 +86,9 @@
     </span>
   </div>
   {% endif %}
+  {% if open_seats == 0 %}
+  <button type="button" class="btn btn-secondary btn-lg btn-block" disabled>There are currently no open seats. Please, check again later.</button>
+  {% else %}
   <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'canteen:reserve_seat' %}" role="button">Make a Reservation</a>
+  {% endif %}
 {% endblock content %}
