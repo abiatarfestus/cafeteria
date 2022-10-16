@@ -4,7 +4,14 @@ from django.db.models.signals import (
 from django.contrib.auth.models import (
     User,
 )  # Import the built-in User model, which is a sender
+
+from django.conf import settings
+from django.urls import reverse
+from django.core.mail import send_mail
 from django.dispatch import receiver  # Import the receiver
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.sites.models import Site
 from .models import Customer, DeliveryAddress, Reservation, Seat
 
 #----CREATE AND UPDATE CUSTOMER----#
@@ -47,3 +54,28 @@ def update_seat_status(sender, instance, created, **kwargs):
             print(f"STATUS of Seat {seat.seat_number} was changed to {seat.status}")
     except Exception as e:
         print(e)
+
+#----SEND RESERVATION STATUS NOTIFICATION----#
+@receiver(post_save, sender=Reservation)
+def notify_customer(sender, instance, created, **kwargs):
+    if not created:
+        customer = Customer.objects.get(pk=instance.customer_id)
+        try:
+            username = customer.customer.username
+            subject = "Reservation Status Notification"
+            domain = Site.objects.get_current().domain
+            relative_path = reverse("canteen:reservations")
+            message = render_to_string(
+                "canteen/reservation_updated.html",
+                {
+                    "url": f"{domain}{relative_path}",
+                    "user": username,
+                    "status": instance.status
+                },
+            )
+            email_from = settings.DEFAULT_FROM_EMAIL
+            recepient = customer.customer.email
+            recipient_list = [recepient]
+            send_mail(subject, message, email_from, recipient_list)
+        except Exception as e:
+            print(e)

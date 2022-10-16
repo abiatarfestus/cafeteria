@@ -2,7 +2,7 @@ import json
 import datetime
 from .models import *
 from django.views import generic
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.urls import reverse_lazy
@@ -183,3 +183,15 @@ class ReservationListView(LoginRequiredMixin, generic.ListView):
         context["open_seats"] = self.num_of_open_seats()
         context["cartItems"] = cartItems
         return context
+
+def update_reservation(request, pk, type):
+    reservation = Reservation.objects.get(pk=pk)
+    if type == "accept":
+        reservation.status = "ACCEPTED"
+    elif type == "decline":
+        reservation.status = "DECLINED"
+    else:
+        reservation.status = "EXPIRED"
+    reservation.save()
+    messages.success(request, ("The reservation status has been updated."))
+    return redirect("canteen:reservations")
