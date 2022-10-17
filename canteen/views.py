@@ -1,20 +1,24 @@
-import json
 import datetime
-from .models import *
-from django.views import generic
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
+import json
+
 from django.contrib import messages
-from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
-from .forms import OrderUpdateForm, AddressUpdateForm, ReservationForm
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views import generic
+from django.views.generic.edit import CreateView
+
+from .forms import AddressUpdateForm, OrderUpdateForm, ReservationForm
+from .models import *
 from .utils import cartData
 
+
 def home(request):
-    return render(request, "canteen/home.html",{})
+    return render(request, "canteen/home.html", {})
 
 
 @login_required
@@ -58,12 +62,27 @@ def checkout(request):
             # messages.success(request, "Delivery infomation updated!")
             return render(request, "canteen/process_order.html", context)
         else:
-            messages.warning(request, "Delivery infomation not updated! Please correct the errors shown below.")
-            context = {"items": items, "order": order, "cartItems": cartItems, "user_form": order_form, "address_form": address_form}
+            messages.warning(
+                request,
+                "Delivery infomation not updated! Please correct the errors shown below.",
+            )
+            context = {
+                "items": items,
+                "order": order,
+                "cartItems": cartItems,
+                "user_form": order_form,
+                "address_form": address_form,
+            }
             return render(request, "canteen/checkout.html", context)
     order_form = OrderUpdateForm(instance=order)
     address_form = AddressUpdateForm(instance=request.user.address)
-    context = {"items": items, "order": order, "cartItems": cartItems, "order_form": order_form, "address_form": address_form}
+    context = {
+        "items": items,
+        "order": order,
+        "cartItems": cartItems,
+        "order_form": order_form,
+        "address_form": address_form,
+    }
     return render(request, "canteen/checkout.html", context)
 
 
@@ -124,20 +143,20 @@ def processOrder(request):
     return JsonResponse("Payment submitted..", safe=False)
 
 
-class ReservationCreateView(
-    LoginRequiredMixin, SuccessMessageMixin, CreateView
-):
+class ReservationCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     form_class = ReservationForm
     model = Reservation
     success_message = f"Reservation of Seat __ was successfully submitted!"
     success_url = reverse_lazy("canteen:reservations")
-    success_message = (
-        "Your reservation was sent successfully! You will receive a notification once your reservation is processed."
-    )
+    success_message = "Your reservation was sent successfully! You will receive a notification once your reservation is processed."
 
     def get_active_reservists(self):
-        active_reservations = Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).select_related("customer")
-        active_reservists = [reservation.customer for reservation in active_reservations]
+        active_reservations = Reservation.objects.filter(
+            Q(status="PENDING") | Q(status="ACCEPTED")
+        ).select_related("customer")
+        active_reservists = [
+            reservation.customer for reservation in active_reservations
+        ]
         # active_reservation_ids = [reservation.id for reservation in active_reservations]
         return active_reservists
 
@@ -155,14 +174,14 @@ class ReservationCreateView(
         return context
 
     def get_initial(self):
-        return {'customer': self.request.user.customer}
+        return {"customer": self.request.user.customer}
 
-    
 
 # List View
 # Templates for displaying List and Detail views
 list_view = "canteen/list_view.html"
 detail_view = "canteen/detail_view.html"
+
 
 class ReservationListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
@@ -170,7 +189,9 @@ class ReservationListView(LoginRequiredMixin, generic.ListView):
     template_name = list_view
 
     def get_queryset(self):
-        return Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).order_by("customer")
+        return Reservation.objects.filter(
+            Q(status="PENDING") | Q(status="ACCEPTED")
+        ).order_by("customer")
 
     def num_of_open_seats(self):
         return Seat.objects.filter(status="OPEN").count()
@@ -183,6 +204,7 @@ class ReservationListView(LoginRequiredMixin, generic.ListView):
         context["open_seats"] = self.num_of_open_seats()
         context["cartItems"] = cartItems
         return context
+
 
 def update_reservation(request, pk, type):
     reservation = Reservation.objects.get(pk=pk)

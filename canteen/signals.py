@@ -1,20 +1,19 @@
-from django.db.models.signals import (
-    post_save,
-)  # Import a post_save signal when a user is created
-from django.contrib.auth.models import (
-    User,
-)  # Import the built-in User model, which is a sender
-
 from django.conf import settings
-from django.urls import reverse
+from django.contrib.auth.models import \
+    User  # Import the built-in User model, which is a sender
+from django.contrib.sites.models import Site
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
+from django.db.models.signals import \
+    post_save  # Import a post_save signal when a user is created
 from django.dispatch import receiver  # Import the receiver
 from django.template.loader import render_to_string
-from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.sites.models import Site
+from django.urls import reverse
+
 from .models import Customer, DeliveryAddress, Reservation, Seat
 
-#----CREATE AND UPDATE CUSTOMER----#
+
+# ----CREATE AND UPDATE CUSTOMER----#
 @receiver(post_save, sender=User)
 def create_customer(sender, instance, created, **kwargs):
     if created:
@@ -24,7 +23,8 @@ def create_customer(sender, instance, created, **kwargs):
         except Exception as e:
             print(e)
 
-#----CREATE AND UPDATE CUSTOMER DELIVERY ADDRESS----#
+
+# ----CREATE AND UPDATE CUSTOMER DELIVERY ADDRESS----#
 @receiver(post_save, sender=User)
 def create_address(sender, instance, created, **kwargs):
     print("ENTERED CREATE ADDRESS")
@@ -35,7 +35,8 @@ def create_address(sender, instance, created, **kwargs):
         except Exception as e:
             print(e)
 
-#----UPDATE SEAT STATUS----#
+
+# ----UPDATE SEAT STATUS----#
 @receiver(post_save, sender=Reservation)
 def update_seat_status(sender, instance, created, **kwargs):
     try:
@@ -55,7 +56,8 @@ def update_seat_status(sender, instance, created, **kwargs):
     except Exception as e:
         print(e)
 
-#----SEND RESERVATION STATUS NOTIFICATION----#
+
+# ----SEND RESERVATION STATUS NOTIFICATION----#
 @receiver(post_save, sender=Reservation)
 def notify_customer(sender, instance, created, **kwargs):
     if not created:
@@ -72,7 +74,7 @@ def notify_customer(sender, instance, created, **kwargs):
                 {
                     "url": f"{domain}{relative_path}",
                     "user": username,
-                    "status": instance.status
+                    "status": instance.status,
                 },
             )
             email_from = settings.DEFAULT_FROM_EMAIL

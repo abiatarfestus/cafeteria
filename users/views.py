@@ -1,19 +1,21 @@
-from django.contrib import messages
-from django.views.generic import View
-from django.contrib.auth import login
-from django.contrib.auth.models import User
-from django.shortcuts import redirect, render, get_object_or_404
-from django.urls import reverse
-from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
-from .tokens import account_activation_token
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from django.urls import reverse
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views.generic import View
+
 from canteen.forms import AddressUpdateForm
+
+from .forms import ProfileUpdateForm, UserRegisterForm, UserUpdateForm
+from .tokens import account_activation_token
 
 
 def register(request):
@@ -37,9 +39,7 @@ def register(request):
             admin = "abiatarfestus@outlook.com"
             recipient_list = [admin]
             send_mail(subject, message, email_from, recipient_list)
-            messages.success(
-                request, ("Registration completed successfully!")
-            )
+            messages.success(request, ("Registration completed successfully!"))
             # return redirect(reverse("index"))
             return redirect("users:confirmation")
     else:
@@ -66,13 +66,23 @@ def profile(request):
             messages.success(request, "Your profile has been updated!")
             return redirect("users:profile")  # Redirect back to profile page
         else:
-            messages.warning(request, "Profile not updated! Please correct the errors shown below.")
-            context = {"user_form": user_form, "profile_form": profile_form, "address_form": address_form}
+            messages.warning(
+                request, "Profile not updated! Please correct the errors shown below."
+            )
+            context = {
+                "user_form": user_form,
+                "profile_form": profile_form,
+                "address_form": address_form,
+            }
             return render(request, "users/profile.html", context)
     user_form = UserUpdateForm(instance=request.user)
     profile_form = ProfileUpdateForm(instance=request.user.profile)
     address_form = AddressUpdateForm(instance=request.user.address)
-    context = {"user_form": user_form, "profile_form": profile_form, "address_form": address_form}
+    context = {
+        "user_form": user_form,
+        "profile_form": profile_form,
+        "address_form": address_form,
+    }
     return render(request, "users/profile.html", context)
 
 

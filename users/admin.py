@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from .models import Profile
 
 
@@ -6,6 +7,4 @@ from .models import Profile
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ("id", "user", "cellphone")
     ordering = ("id",)
-    search_fields = (
-        "cellphone",
-    )
+    search_fields = ("cellphone",)

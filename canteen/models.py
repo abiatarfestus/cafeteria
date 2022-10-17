@@ -1,31 +1,33 @@
-from django.db import models
-from django.db.models import Q
 from django.contrib.auth.models import User
 # from django_resized import ResizedImageField
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
+
 
 def validate_cellphone(value):
     """
     Validate whether the cellphone number is a valid MTC/TN number
     """
     # print(F"VALUE: {value}")
-    if len(value)<10:
+    if len(value) < 10:
         raise ValidationError(
             _(f"Cellphone number must have 10 digits."),
-            params={'value': value},
+            params={"value": value},
         )
     elif value[:3] not in ["081", "085"]:
         raise ValidationError(
             _(f"A valid cellphone number must start with '081' or '085'"),
-            params={'value': value},
+            params={"value": value},
         )
     for digit in value:
         if digit not in "0123456789":
             raise ValidationError(
                 _(f"Cellphone number must contain digits only."),
-                params={'value': value},
+                params={"value": value},
             )
+
 
 def minimum_qantity(value):
     """
@@ -35,14 +37,18 @@ def minimum_qantity(value):
     if value < 1:
         raise ValidationError(
             _(f"You cannot add an item with 0 quantity."),
-            params={'value': value},
+            params={"value": value},
         )
 
+
 class Customer(models.Model):
-    customer = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE, related_name="customer")
+    customer = models.OneToOneField(
+        User, null=True, blank=True, on_delete=models.CASCADE, related_name="customer"
+    )
 
     def __str__(self):
         return f"{self.customer.username}"
+
 
 class Table(models.Model):
     table_number = models.IntegerField(unique=True, blank=False, null=False, default=0)
@@ -53,6 +59,7 @@ class Table(models.Model):
     def __str__(self):
         return f"{self.table_number}"
 
+
 class Seat(models.Model):
     SEAT_STATUS = [
         ("OPEN", "Open"),
@@ -61,7 +68,9 @@ class Seat(models.Model):
     ]
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
     seat_number = models.IntegerField(unique=True, blank=False, null=False)
-    status = models.CharField(max_length=8, choices=SEAT_STATUS, editable=False, default="OPEN")
+    status = models.CharField(
+        max_length=8, choices=SEAT_STATUS, editable=False, default="OPEN"
+    )
 
     def clean(self):
         selected_table = Table.objects.get(id=self.table.id)
@@ -71,10 +80,17 @@ class Seat(models.Model):
         print(f"NUMBER_OF_SEATS: {number_of_seats}")
         if not self.id:
             if number_of_seats >= selected_table.max_seats:
-                raise ValidationError({"table": _(f"Table {selected_table.table_number} has reached maximum seats.")})
+                raise ValidationError(
+                    {
+                        "table": _(
+                            f"Table {selected_table.table_number} has reached maximum seats."
+                        )
+                    }
+                )
 
     def __str__(self):
         return f"{self.seat_number}"
+
 
 class Reservation(models.Model):
     RESERVATION_STATUS = [
@@ -83,32 +99,55 @@ class Reservation(models.Model):
         ("DECLINED", "Declined"),
         ("EXPIRED", "Expired"),
     ]
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="reservations")
+    customer = models.ForeignKey(
+        Customer, on_delete=models.CASCADE, related_name="reservations"
+    )
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
-    status = models.CharField(max_length=8, choices=RESERVATION_STATUS, default="PENDING")
+    status = models.CharField(
+        max_length=8, choices=RESERVATION_STATUS, default="PENDING"
+    )
     time_reserved = models.DateTimeField(auto_now_add=True)
-
 
     def clean(self):
         selected_seat = Seat.objects.get(id=self.seat.id)
         print(f"SELECTED_SEAT: {selected_seat}")
-        active_reservations = Reservation.objects.filter(Q(status="PENDING") | Q(status="ACCEPTED")).select_related("customer")
+        active_reservations = Reservation.objects.filter(
+            Q(status="PENDING") | Q(status="ACCEPTED")
+        ).select_related("customer")
         print(f"ACTIVE RESERVATIONS: {active_reservations}")
         reservists = [reservation.customer for reservation in active_reservations]
         active_reservation_ids = [reservation.id for reservation in active_reservations]
         print(f"RESERVISTS: {reservists}")
         if selected_seat.status in ["PENDING", "RESERVED"]:
-            if not self.id: # New record
-                raise ValidationError({"seat": _("The selected seat is already reserved.")})  # The seat you want is already reserved || remove this by showing open seats only
+            if not self.id:  # New record
+                raise ValidationError(
+                    {"seat": _("The selected seat is already reserved.")}
+                )  # The seat you want is already reserved || remove this by showing open seats only
             else:
-                if self.id not in active_reservation_ids and self.status in ["PENDING", "ACCEPTED"]:
-                    raise ValidationError({"seat": _("The selected seat is already reserved.")})
+                if self.id not in active_reservation_ids and self.status in [
+                    "PENDING",
+                    "ACCEPTED",
+                ]:
+                    raise ValidationError(
+                        {"seat": _("The selected seat is already reserved.")}
+                    )
         if self.customer in reservists:
-            if not self.id: # New record
-                raise ValidationError({"customer": _("The customer already has an active reservation.")}) # You already have a pending resevation || remove this by disabling reservation when already waiting
+            if not self.id:  # New record
+                raise ValidationError(
+                    {"customer": _("The customer already has an active reservation.")}
+                )  # You already have a pending resevation || remove this by disabling reservation when already waiting
             else:
-                if self.id not in active_reservation_ids and self.status in ["PENDING", "ACCEPTED"]:
-                    raise ValidationError({"customer": _("The customer already has an active reservation.")})
+                if self.id not in active_reservation_ids and self.status in [
+                    "PENDING",
+                    "ACCEPTED",
+                ]:
+                    raise ValidationError(
+                        {
+                            "customer": _(
+                                "The customer already has an active reservation."
+                            )
+                        }
+                    )
         super(Reservation, self).clean()
 
     def __str__(self):
@@ -132,11 +171,7 @@ class Product(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=[
-                    "name",
-                    "description",
-                    "product_type"
-                ],
+                fields=["name", "description", "product_type"],
                 name="unique_products",
             )
         ]
@@ -161,7 +196,11 @@ class Order(models.Model):
         ("COMPLETED", "Completed"),
     ]
     customer = models.ForeignKey(
-        Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders"
+        Customer,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders",
     )
     date_ordered = models.DateTimeField(auto_now_add=True)
     delivery = models.BooleanField(default=False)
@@ -180,7 +219,9 @@ class Order(models.Model):
             print(f"ORDERERS: {active_orderers}")
             print(f"THIS ORDERER: {self.customer}")
             if self.customer in active_orderers:
-                raise ValidationError({"customer": _("This customer already has an open order.")})
+                raise ValidationError(
+                    {"customer": _("This customer already has an open order.")}
+                )
 
     @property
     def get_cart_total(self):
@@ -197,7 +238,9 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, related_name="order_items")
+    order = models.ForeignKey(
+        Order, on_delete=models.SET_NULL, null=True, related_name="order_items"
+    )
     quantity = models.IntegerField(null=True, blank=True, default=0)
     date_added = models.DateTimeField(auto_now_add=True)
 
@@ -219,9 +262,17 @@ class OrderItem(models.Model):
 
 
 class DeliveryAddress(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name="address")
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, null=True, related_name="address"
+    )
     # order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-    address = models.CharField(max_length=200, null=True, blank=True, verbose_name="Delivery Address", help_text="Enter your delivery address on campus, e.g., office No. & office location")
+    address = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Delivery Address",
+        help_text="Enter your delivery address on campus, e.g., office No. & office location",
+    )
     date_added = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
