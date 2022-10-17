@@ -99,6 +99,7 @@ class ActivateAccount(View):
             user.save()
             current_site = get_current_site(request)
             username = user.username
+            user_email = user.email
             subject = "Account activated"
             message = render_to_string(
                 "registration/account_activated.html",
@@ -109,7 +110,7 @@ class ActivateAccount(View):
             )
             email_from = settings.DEFAULT_FROM_EMAIL
             admin = "abiatarfestus@outlook.com"
-            recipient_list = [admin]
+            recipient_list = [user_email]
             send_mail(subject, message, email_from, recipient_list)
             messages.success(request, ("The account has been activated."))
             return redirect("home")

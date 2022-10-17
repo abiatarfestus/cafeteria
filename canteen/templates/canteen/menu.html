@@ -1,27 +1,96 @@
 {% extends 'canteen/main.html' %}
 {% load static %}
 {% block welcome %}
-<h3>Our Menu</h3>
+<h3>Our Menus</h3>
 <hr>
 {% endblock %}
 {% block content %}
 <div class="container block-content">
-	<div class="row">
-		{% for product in products %}
-		<div class="col-lg-4">
-			<img class="thumbnail" src="{{product.imageURL}}">
-			<div class="box-element product">
-				<h6><strong>{{product.name}}</strong></h6>
-				<hr>
-
-				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
-				
-				<a class="btn btn-outline-success" href="#">View</a>
-				<h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
-
-			</div>
-		</div>
-		{% endfor %}
-	</div>
+<div class="row row-cols-1 row-cols-md-3">
+    <div class="col mb-4">
+      <div class="card">
+        <img src="{% static 'images/meals.jpg' %}" class="card-img-top" alt="Main Meal Image">
+        <div class="card-body">
+          <h5 class="card-title">Main Meals</h5>
+          <a
+            class="btn btn-outline-primary btn-lg"
+            href="{% url 'canteen:sub_menu' 'meal' %}"
+            role="button"
+            >View Meals</a
+            >
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card">
+        <img src="{% static 'images/eggs.jpg' %}" class="card-img-top" alt="Extras Image">
+        <div class="card-body">
+          <h5 class="card-title">Extras/Sides</h5>
+          <a
+            class="btn btn-outline-primary btn-lg"
+            href="{% url 'canteen:sub_menu' 'food' %}"
+            role="button"
+            >View Extras</a
+            >
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card">
+        <img src="{% static 'images/dessert.jpg' %}" class="card-img-top" alt="Desserts Image">
+        <div class="card-body">
+          <h5 class="card-title">Desserts</h5>
+          <a
+            class="btn btn-outline-primary btn-lg"
+            href="{% url 'canteen:sub_menu' 'dessert' %}"
+            role="button"
+            >View Desserts</a
+            >
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+      <div class="card">
+        <img src="{% static 'images/snacks.jpg' %}" class="card-img-top" alt="Snacks Image">
+        <div class="card-body">
+          <h5 class="card-title">Snacks</h5>
+          <a
+            class="btn btn-outline-primary btn-lg"
+            href="{% url 'canteen:sub_menu' 'snack' %}"
+            role="button"
+            >View Snacks</a
+            >
+        </div>
+      </div>
+    </div>
+    <div class="col mb-4">
+        <div class="card">
+          <img src="{% static 'images/fruits.jpg' %}" class="card-img-top" alt="Fruits Image">
+          <div class="card-body">
+            <h5 class="card-title">Fruits</h5>
+            <a
+              class="btn btn-outline-primary btn-lg"
+              href="{% url 'canteen:sub_menu' 'fruit' %}"
+              role="button"
+              >View Fruits</a
+              >
+          </div>
+        </div>
+      </div>
+      <div class="col mb-4">
+        <div class="card">
+          <img src="{% static 'images/beverages.jpg' %}" class="card-img-top" alt="Beverages Image">
+          <div class="card-body">
+            <h5 class="card-title">Beverages</h5>
+            <a
+              class="btn btn-outline-primary btn-lg"
+              href="{% url 'canteen:sub_menu' 'drink' %}"
+              role="button"
+              >View Beverages</a
+              >
+          </div>
+        </div>
+      </div>
+  </div>
 </div>
 {% endblock content %}

@@ -1,5 +1,6 @@
 {% extends 'canteen/main.html' %}
 {% block content %}
+<div class="container block-content" style="background:white;">
 <div class="content-section">
   <div class="media">
     <img class="rounded-circle account-img mt-3 mb-3" src="{{ user.profile.image.url }}">
@@ -61,7 +62,8 @@
     {{ profile_form }} Profile form -->
   </fieldset>
   <div class="form-group">
-    <button class="btn btn-outline-info" type="submit">Update</button>
+    <button class="btn btn-outline-info mb-3" type="submit">Update</button>
   </div>
 </form>
+</div>
 {% endblock %}

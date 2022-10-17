@@ -21,8 +21,13 @@ def home(request):
     return render(request, "canteen/home.html", {})
 
 
-@login_required
+# @login_required
 def menu(request):
+    return render(request, "canteen/menu.html")
+
+
+@login_required
+def sub_menu(request, menu_type):
     data = cartData(request)
 
     cartItems = data["cartItems"]
@@ -30,8 +35,8 @@ def menu(request):
     items = data["items"]
 
     products = Product.objects.all()
-    context = {"products": products, "cartItems": cartItems}
-    return render(request, "canteen/menu.html", context)
+    context = {"products": products, "cartItems": cartItems, "menu_type":menu_type}
+    return render(request, "canteen/sub_menu.html", context)
 
 
 @login_required

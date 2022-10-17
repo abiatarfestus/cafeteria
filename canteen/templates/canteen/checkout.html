@@ -1,6 +1,7 @@
 {% extends 'canteen/main.html' %}
 {% load static %}
 {% block content %}
+<div class="container block-content">
      <div class="row">
 		<div class="col-lg-6">
 			<div class="box-element" id="form-wrapper">
@@ -190,9 +191,10 @@
 	    	.then((data) => {
 				  console.log('Success:', data);
 				  alert('Transaction completed');  
-				  window.location.href = "{% url 'canteen' %}"
+				  window.location.href = "{% url 'home' %}"
 
 				})
 	    }
 	</script>
+	</div>
 {% endblock content %}

@@ -1,0 +1,48 @@
+{% extends 'canteen/main.html' %}
+{% load static %}
+{% block welcome %}
+{% if menu_type == "meal" %}
+<h1>Main Meals</h1>
+{% elif menu_type == "food" %}
+<h1>Side Foods</h1>
+{% elif menu_type == "snack" %}
+<h1>Snacks</h1>
+{% elif menu_type == "fruit" %}
+<h1>Fruits</h1>
+{% elif menu_type == "drink" %}
+<h1>Beverages</h1>
+{% elif menu_type == "dessert" %}
+<h3>Desserts</h3>
+{% endif %}
+<hr>
+<a class="btn btn-outline-secondary mr-5" href="{% url 'canteen:sub_menu' 'meal' %}" role="button"><strong>Main Meals</strong></a>
+<a class="btn btn-outline-secondary mr-5" href="{% url 'canteen:sub_menu' 'food' %}" role="button"><strong>Side Foods</strong></a>
+<a class="btn btn-outline-secondary mr-5" href="{% url 'canteen:sub_menu' 'dessert' %}" role="button"><strong>Desserts</strong></a>
+<a class="btn btn-outline-secondary mr-5" href="{% url 'canteen:sub_menu' 'fruit' %}" role="button"><strong>Fruits</strong></a>
+<a class="btn btn-outline-secondary mr-5" href="{% url 'canteen:sub_menu' 'snack' %}" role="button"><strong>Snacks</strong></a>
+<a class="btn btn-outline-secondary" href="{% url 'canteen:sub_menu' 'drink' %}" role="button"><strong>Beverages</strong></a>
+<hr>
+{% endblock %}
+{% block content %}
+<div class="container block-content">
+	<div class="row">
+		{% for product in products %}
+		{% if product.product_type == menu_type|upper %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{{product.imageURL}}">
+			<div class="box-element product">
+				<h6><strong>{{product.name}}</strong></h6>
+				<hr>
+
+				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+				
+				<a class="btn btn-outline-success" href="#">View</a>
+				<h4 style="display: inline-block; float: right"><strong>${{product.price}}</strong></h4>
+
+			</div>
+		</div>
+		{% endif %}
+		{% endfor %}
+	</div>
+</div>
+{% endblock content %}
