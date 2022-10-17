@@ -1,94 +1,109 @@
-{% extends 'canteen/main.html' %}
-{% load static %}
-{% block welcome %}
-<h3>{{ heading }}</h3>
-<hr>
-{% endblock %}
-{% block content %}
-<br>
-<h4>Number of Open Seats: <span class="badge badge-info">{{ open_seats}}</span></h4>
+{% extends 'canteen/main.html' %} {% load static %} {% block welcome %}
+<h1>{{ heading }}</h1>
+<hr />
+{% endblock %} {% block content %}
+<br />
+<h4>
+  Number of Open Seats: <span class="badge badge-info">{{ open_seats}}</span>
+</h4>
 <table class="table table-hover">
-    <thead class="thead-light">
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Customer</th>
-        <th scope="col">Seat</th>
-        <th scope="col">Status</th>
-        <th scope="col">Time Reserved</th>
-        {% if user.is_staff %}
-        <th scope="col">Accept</th>
-        <th scope="col">Decline</th>
-        {% endif %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for reservation in reservation_list %}
-      <tr>
-        <th scope="row">{{forloop.counter}}</th>
-        <td>{{reservation.customer}}
-          {% if user.customer.id == reservation.customer.id %}
-          <button type="button" class="btn btn-outline-danger ml-3" data-toggle="modal"
-                        data-target="#exitQueueAlert">
-                        Cancel
-                    </button>
-            {% endif %}
-        </td>
-        <td>{{reservation.seat}}</td>
-        <td>{{reservation.status}}</td>
-        <td>{{reservation.time_reserved}}</td>
-        {% if user.is_staff %}
-        <td>{% if reservation.status == "PENDING" %}
-          <button type="button" class="btn btn-outline-success" data-toggle="modal"
-                        data-target="#exitQueueAlert">
-                        Accept
-                    </button>
-            {% else %}
-            <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
-                        data-target="#exitQueueAlert" disabled>
-                        Accept
-                    </button>
-            {% endif %}
-        </td>
-        <td>{% if reservation.status == "PENDING" %}
-          <button type="button" class="btn btn-outline-danger" data-toggle="modal"
-                        data-target="#exitQueueAlert">
-                        Decline
-                    </button>
-            {% else %}
-            <button type="button" class="btn btn-outline-secondary" data-toggle="modal"
-                        data-target="#exitQueueAlert" disabled>
-                        Decline
-                    </button>
-            {% endif %}
-        </td>
-        {% endif %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% if is_paginated %}
-  <div class="pagination pagination-lg justify-content-center">
-    <span class="page-link">
-      <!-- step-link from django change to page-link  bootstrap class -->
-      {% if page_obj.has_previous %}
-      <a href="?page=1">&laquo; first</a>
-      <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Customer</th>
+      <th scope="col">Seat</th>
+      <th scope="col">Status</th>
+      <th scope="col">Time Reserved</th>
+      {% if user.is_staff %}
+      <th scope="col">Accept</th>
+      <th scope="col">Decline</th>
       {% endif %}
-  
-      <span class="current">
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-      </span>
-  
-      {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}">next</a>
-      <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    </tr>
+  </thead>
+  <tbody>
+    {% for reservation in reservation_list %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>
+        {{reservation.customer}} 
+        {% if user.customer.id == reservation.customer.id %}
+        <a
+          class="btn btn-outline-danger ml-3"
+          href="{% url 'canteen:update_reservation' pk=reservation.id type='cancel' %}"
+          role="button"
+          >Cancel</a
+        >
+        {% endif %}
+      </td>
+      <td>{{reservation.seat}}</td>
+      <td>{{reservation.status}}</td>
+      <td>{{reservation.time_reserved}}</td>
+      {% if user.is_staff %}
+      <td>
+        {% if reservation.status == "PENDING" %}
+        <a
+          class="btn btn-outline-success"
+          href="{% url 'canteen:update_reservation' pk=reservation.id type='accept' %}"
+          role="button"
+          >Accept</a
+        >
+        {% else %}
+        <button type="button" class="btn btn-outline-secondary" disabled>
+          Accept
+        </button>
+        {% endif %}
+      </td>
+      <td>
+        {% if reservation.status == "PENDING" %}
+        <a
+          class="btn btn-outline-danger"
+          href="{% url 'canteen:update_reservation' pk=reservation.id type='decline' %}"
+          role="button"
+          >Decline</a
+        >
+        {% else %}
+        <button type="button" class="btn btn-outline-secondary" disabled>
+          Decline
+        </button>
+        {% endif %}
+      </td>
       {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if is_paginated %}
+<div class="pagination pagination-lg justify-content-center">
+  <span class="page-link">
+    <!-- step-link from django change to page-link  bootstrap class -->
+    {% if page_obj.has_previous %}
+    <a href="?page=1">&laquo; first</a>
+    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
     </span>
-  </div>
-  {% endif %}
-  {% if open_seats == 0 %}
-  <button type="button" class="btn btn-secondary btn-lg btn-block" disabled>There are currently no open seats. Please, check again later.</button>
-  {% else %}
-  <a class="btn btn-outline-primary btn-lg btn-block" href="{% url 'canteen:reserve_seat' %}" role="button">Make a Reservation</a>
-  {% endif %}
-{% endblock content %}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">next</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+  </span>
+</div>
+{% endif %} {% if user.is_staff %}
+<button type="button" class="btn btn-secondary btn-lg btn-block" disabled>
+  Please process the pending reservations.
+</button>
+{% elif open_seats == 0 %}
+<button type="button" class="btn btn-secondary btn-lg btn-block" disabled>
+  There are currently no open seats. Please, check again later.
+</button>
+{% else %}
+<a
+  class="btn btn-outline-primary btn-lg btn-block"
+  href="{% url 'canteen:reserve_seat' %}"
+  role="button"
+  >Make a Reservation</a
+>
+{% endif %} {% endblock content %}

@@ -18,7 +18,7 @@ def home(request):
 
 
 @login_required
-def canteen(request):
+def menu(request):
     data = cartData(request)
 
     cartItems = data["cartItems"]
@@ -27,7 +27,7 @@ def canteen(request):
 
     products = Product.objects.all()
     context = {"products": products, "cartItems": cartItems}
-    return render(request, "canteen/canteen.html", context)
+    return render(request, "canteen/menu.html", context)
 
 
 @login_required
@@ -132,7 +132,7 @@ class ReservationCreateView(
     success_message = f"Reservation of Seat __ was successfully submitted!"
     success_url = reverse_lazy("canteen:reservations")
     success_message = (
-        "Reservation sent successfully! You will receive a notification once your reservation is processed."
+        "Your reservation was sent successfully! You will receive a notification once your reservation is processed."
     )
 
     def get_active_reservists(self):
@@ -193,5 +193,5 @@ def update_reservation(request, pk, type):
     else:
         reservation.status = "EXPIRED"
     reservation.save()
-    messages.success(request, ("The reservation status has been updated."))
+    messages.success(request, ("Reservation status successfully updated."))
     return redirect("canteen:reservations")

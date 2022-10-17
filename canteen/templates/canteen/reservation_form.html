@@ -8,7 +8,11 @@
 {% block content %}
 {% if request.user.customer in active_reservists %}
 <div class="alert alert-danger" role="alert">
-    Sorry, you already have an active reservation. If your reservation status has been Pending for too long, please contact the canteen staff.
+    Sorry, you already have an active reservation. If your reservation status has been Pending for too long, please contact us.
+</div>
+{% elif user.is_staff %}
+<div class="alert alert-danger" role="alert">
+    Canteen staff members are not allowed to make reservations!
 </div>
 {% elif open_seats == 0 %}
 <div class="alert alert-info" role="alert">

@@ -1,113 +1,250 @@
 <!DOCTYPE html>
 {% load static %}
 <html>
-<head>
-	<title>Unam Staff Canteen</title>
+  <head>
+    <title>Unam Staff Canteen</title>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1"
+    />
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+      crossorigin="anonymous"
+    />
 
-	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-	<!-- <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg"> -->
-	<link rel="icon" type="image/png" href="/static/images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/static/images/favicon.svg"> -->
+    <link rel="icon" type="image/png" href="/static/images/favicon.ico" />
 
-	<script type="text/javascript">
-		var user = '{{request.user}}'
+    <script type="text/javascript">
+      var user = "{{request.user}}";
 
-		function getToken(name) {
-		    var cookieValue = null;
-		    if (document.cookie && document.cookie !== '') {
-		        var cookies = document.cookie.split(';');
-		        for (var i = 0; i < cookies.length; i++) {
-		            var cookie = cookies[i].trim();
-		            // Does this cookie string begin with the name we want?
-		            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-		                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-		                break;
-		            }
-		        }
-		    }
-		    return cookieValue;
-		}
-		var csrftoken = getToken('csrftoken')
-	
-	</script>
+      function getToken(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      var csrftoken = getToken("csrftoken");
+    </script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="{% url 'home' %}">Staff Canteen</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-</head>
-<body>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'canteen:reservations' %}"
+              >Reservations <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'canteen:menu' %}"
+              >Menu <span class="sr-only"></span
+            ></a>
+          </li>
+        </ul>
+        <div class="container-fluid justify-content-end">
+          {% if user.is_authenticated %}
+          <ul class="nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'users:profile' %}"
+                ><img
+                  src="{{ user.profile.image.url }}"
+                  class="rounded-circle"
+                  width="45"
+                  height="45"
+                  alt="..."
+                />
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link blend"
+                href="{% url 'users:profile' %}"
+                aria-disabled="true"
+                >{{ user.get_username }}</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link disabled"
+                href="#"
+                tabindex="-1"
+                aria-disabled="true"
+                >|</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link blend"
+                a
+                href="{% url 'logout'%}?next={{request.path}}"
+                >Logout</a
+              >
+            </li>
+          </ul>
+          <a href="{% url 'canteen:cart' %}">
+            <img id="cart-icon" src="{% static 'images/cart.png' %}" />
+          </a>
+          <p id="cart-total">{{cartItems}}</p>
+          {% else %}
+          <ul class="nav">
+            <li class="nav-item">
+              <a
+                class="nav-link blend"
+                href="{% url 'login'%}?next={{request.path}}"
+                >Login</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link disabled"
+                href="#"
+                tabindex="-1"
+                aria-disabled="true"
+                >|</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link blend" href="{% url 'users:register' %}"
+                >Register</a
+              >
+            </li>
+          </ul>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    <br />
+    <div class="container">
+      <!-- Bootstrap-formatted messages -->
+      {% if messages %} {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }} alert-dismissible"
+        role="alert"
+      >
+        <button
+          type="button"
+          class="btn-close"
+          data-dismiss="alert"
+          aria-label="Close"
+        ></button>
+        {{ message }}
+      </div>
+      {% endfor %} {% endif %}
+    </div>
 
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-	  <a class="navbar-brand" href="{% url 'home' %}">Staff Canteen</a>
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-	    <span class="navbar-toggler-icon"></span>
-	  </button>
+    <div class="container page-headings">{% block welcome %}{% endblock %}</div>
 
-	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-	    <ul class="navbar-nav mr-auto">
-	      <li class="nav-item active">
-	        <a class="nav-link" href="{% url 'canteen:reservations' %}">Reservations <span class="sr-only">(current)</span></a>
-	      </li>
-		  <li class="nav-item active">
-	        <a class="nav-link" href="{% url 'canteen:canteen' %}">Menu <span class="sr-only"></span></a>
-	      </li>
-	 
-	    </ul>
-		<div class="container-fluid  justify-content-end">
-			{% if user.is_authenticated %}
-            <ul class="nav">
-              <li class="nav-item"><a class="nav-link" href="{% url 'users:profile' %}"><img src="{{ user.profile.image.url }}" class="rounded-circle" width="45" height="45" alt="..."> </a></li>
-			  <li class="nav-item"><a class="nav-link blend" href="{% url 'users:profile' %}" aria-disabled="true">{{ user.get_username }}</a></li>
-              <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">|</a></li>
-              <li class="nav-item"><a class="nav-link blend" a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
-            </ul>
-			<a href="{% url 'canteen:cart' %}">
-				<img id="cart-icon" src="{% static 'images/cart.png' %}">
-			</a>
-			<p id="cart-total">{{cartItems}}</p>
-			{% else %}
-			<ul class="nav">
-				<li class="nav-item"><a class="nav-link blend" href="{% url 'login'%}?next={{request.path}}">Login</a></li>
-				<li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">|</a></li>
-				<li class="nav-item"><a class="nav-link blend" href="{% url 'users:register' %}">Register</a></li>
-			  </ul>
-			  {% endif %}
+    <div class="container">
+      <br />
+      {% block content %} {% endblock content%}
+    </div>
+
+    <!-- Footer section -->
+    <footer class="mainfooter" role="contentinfo">
+      <div class="footer-middle">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <!--Column1-->
+              <div class="footer-pad">
+                <h4>Links</h4>
+                <ul class="list-unstyled">
+                  <li>
+                    <a href="{% url 'canteen:reservations' %}">Reservations</a>
+                  </li>
+                  <li><a href="{% url 'canteen:menu' %}">Menu</a></li>
+                  <li><a href="#">University of Namibia</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col">
+              <!--Column2-->
+              <div class="footer-pad">
+                <h4>Contact Us</h4>
+                <ul class="list-unstyled">
+                  <li><strong>Visit: </strong>No. 45, Main campus</li>
+                  <li><strong>Phone: </strong>06100000/081000000</li>
+                  <li>
+                    <strong>Email: </strong>customersupport@unamcanteen.na
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="col">
+              <h4>Follow Us</h4>
+              <ul class="social-network social-circle">
+                <li>
+                  <a href="#" class="icoFacebook" title="Facebook"
+                    ><i class="bi bi-facebook"></i
+                  ></a>
+                </li>
+                <li>
+                  <a href="#" class="icoTwitter" title="Twitter"
+                    ><i class="bi bi-twitter"></i
+                  ></a>
+                </li>
+              </ul>
+            </div>
           </div>
-	  </div>
-	</nav>
-	<br>
-	<div class="container">
-		<!-- Bootstrap-formatted messages -->
-		{% if messages %}
-		{% for message in messages %}
-		<div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
-		  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
-		  </button>
-		  {{ message }}
-		</div>
-		{% endfor %}
-		{% endif %}
+          <div class="row">
+            <div class="col-md-12 copy">
+              <p class="text-center">
+                &copy; Copyright 2022 - Unam Staff Canteen. All rights reserved.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
 
-	<div class="container page-headings">
-		{% block welcome %}{% endblock %}
-		</div>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
 
-     <div class="container">
-            <br>
-            {% block content %}
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
 
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
 
-            {% endblock %}
-         </div>
-
-
-	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-
-	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-
-	<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
-</body>
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+  </body>
 </html>

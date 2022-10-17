@@ -1,4 +1,6 @@
-{% extends 'canteen/main.html' %} {% block content%}
+{% extends 'canteen/main.html' %} 
+{% load static %}
+{% block content %}
 <div class="row">
 	<div class="col-md-6">
 		{% if form.errors %}
@@ -29,4 +31,4 @@
 		<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
 	</div>
 </div>
-{% endblock %}
+{% endblock content %}

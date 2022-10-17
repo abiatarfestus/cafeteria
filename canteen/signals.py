@@ -61,6 +61,8 @@ def notify_customer(sender, instance, created, **kwargs):
     if not created:
         customer = Customer.objects.get(pk=instance.customer_id)
         try:
+            if instance.status == "EXPIRED":
+                return
             username = customer.customer.username
             subject = "Reservation Status Notification"
             domain = Site.objects.get_current().domain
