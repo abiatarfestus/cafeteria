@@ -156,13 +156,16 @@ class Reservation(models.Model):
 
 class Product(models.Model):
     PRODUCT_TYPES = [
+        ("MEAL", "Meal"),
         ("FOOD", "Food"),
         ("DRINK", "Drink"),
-        ("OTHER", "Other"),
+        ("FRUIT", "Fruit"),
+        ("SNACK", "Snack"),
+        ("DESSERT", "Dessert"),
     ]
     name = models.CharField(max_length=200)
     description = models.TextField(null=True, blank=True)
-    product_type = models.CharField(max_length=5, choices=PRODUCT_TYPES)
+    product_type = models.CharField(max_length=7, choices=PRODUCT_TYPES)
     price = models.FloatField()
     image = models.ImageField(
         default="product_pics/placeholder.png", upload_to="product_pics"

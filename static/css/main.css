@@ -1,5 +1,6 @@
 body{
-	background-color: hsl(0, 0%, 98%);
+	background: white url("../images/cheese-macaroni.jpg");
+	/* background: white; */
 }
 
 h1,h2,h3,h4,h5,h6{
@@ -27,6 +28,17 @@ h1,h2,h3,h4,h5,h6{
 
 .bg-dark{
 	background-color: #d42c2c!important;
+}
+
+/* footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+} */
+
+table{
+	background-color: white;
 }
 
 .blend{

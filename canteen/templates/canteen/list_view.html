@@ -2,6 +2,7 @@
 <h1>{{ heading }}</h1>
 <hr />
 {% endblock %} {% block content %}
+<div class="container block-content">
 <br />
 <h4>
   Number of Open Seats: <span class="badge badge-info">{{ open_seats}}</span>
@@ -106,4 +107,6 @@
   role="button"
   >Make a Reservation</a
 >
-{% endif %} {% endblock content %}
+{% endif %} 
+</div>
+{% endblock content %}

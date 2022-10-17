@@ -1,10 +1,11 @@
 {% extends 'canteen/main.html' %}
 {% load static %}
 {% block welcome %}
-<h3>Make your order here</h3>
+<h3>Our Menu</h3>
 <hr>
 {% endblock %}
 {% block content %}
+<div class="container block-content">
 	<div class="row">
 		{% for product in products %}
 		<div class="col-lg-4">
@@ -22,5 +23,5 @@
 		</div>
 		{% endfor %}
 	</div>
-
+</div>
 {% endblock content %}
