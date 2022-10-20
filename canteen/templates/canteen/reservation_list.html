@@ -62,6 +62,13 @@
           role="button"
           >Decline</a
         >
+        {% elif reservation.status == "ACCEPTED" %}
+        <a
+          class="btn btn-outline-danger"
+          href="{% url 'canteen:update_reservation' pk=reservation.id type='expire' %}"
+          role="button"
+          >Expire</a
+        >
         {% else %}
         <button type="button" class="btn btn-outline-secondary" disabled>
           Decline

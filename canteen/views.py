@@ -239,6 +239,6 @@ def contact(request):
                 send_mail(subject, message, from_email, ADMIN_EMAILS)
             except BadHeaderError:
                 return HttpResponse("Invalid header found.")
-            messages.success(request, ("Message sent successfully. Thank you for engaging us"))
+            messages.success(request, ("Message sent successfully. Thank you for engaging us!"))
             return redirect("home")
     return render(request, "canteen/contact.html", {"form": form})

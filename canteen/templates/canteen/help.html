@@ -17,7 +17,7 @@
             aria-expanded="true"
             aria-controls="collapseOne"
           >
-            General guidelines
+            General Guidelines
           </button>
         </h2>
       </div>
@@ -31,9 +31,9 @@
           <h4>What it's about</h4>
           <p>
             This web application provides a platform for our customers to
-            interact with us online. The platform is aimed at enhancing
-            convenience of our clients by allowing them to place orders as well
-            as reserves seats in the cafeteria from the comfort of your office,
+            interact with us online. The platform is aimed to enhance
+            convenience to our clients by allowing them to place orders as well
+            as reserve seats in the cafeteria from the comfort of their office,
             home or elsewhere. This reduces frustration from queues while
             improving efficiency and time management.
           </p>
@@ -71,15 +71,15 @@
           </p>
           <h4>Customer Registration</h4>
           <p>
-            Only logged in customers can place orders and reserve seats. A
-            customer can create a personal account by clicking on
+            Only logged in customers can place orders and reserve seats online. A
+            customer can create a personal user account by navigating to
             <a href="{% url 'users:register' %}"
-              >Register on the navigation bar.</a
+              >Register.</a
             >
             Once an account is created, an activation request is sent to the
             Admin. The user can only login to their acount after it has been
-            activated. Once the account is activated, the user will be notified
-            via email. Upon activation, the user can login and update their
+            activated by the Admin. Once the account is activated, the user will be notified
+            via email. Upon activation, the user can login to their account and update their
             profile with an image, a residential/delivery address and a
             cellphone number (to be used for SMS notification).
           </p>
@@ -111,14 +111,14 @@
           <p>
             A logged in customer can reserve one of the open seats in the
             cafeteria. Once a reservation is made, it will be added to the list
-            of active reservations, but with the Status of Pending. A
-            notification is sent to the staff emails to either accept of decline
+            of active reservations, but with the Status of <em>Pending</em>. A
+            notification is sent to staff emails to either accept or decline
             the reservation. (A confirmation of the reservation is also sent to
             the customer via email and SMS if there's a cellphone number on the
             customer's profile.) Once the reservation has been
             accepted/declined, another notification will be sent to the customer
-            via email and SMS. Reservations will be updated to Expired by the
-            staff after it has been used. (Un updated is being developed to
+            via email and SMS. Reservations will be updated to <em>Expired</em> status by the
+            staff after it has been used. (An update is being developed to
             automate this process based on time intervals.) The customer can
             cancel their own reservation at any time from the Reservations list
             page.
@@ -149,7 +149,7 @@
       >
         <div class="card-body">
           <p>
-            Customers can place their orders from the canteen online with or
+            Customers can place their orders online with or
             without delivery option. When an order with no delivery is done, the
             customer will be informed through the phone number on their profile.
             Customers can use any of the payment methods availabel at checkout
@@ -164,6 +164,6 @@
     </div>
   </div>
   <br><br>
-<h5 style="text-align: center;">Still have some questions? <a href="{% url 'users:register' %}">Contact us here</a> or via our contacts on the footer.</h5> 
+<h5 style="text-align: center;">Still have some questions? <a href="{% url 'canteen:contact' %}">Contact us here</a> or via our contacts on the footer.</h5> 
 </div>
 {% endblock %}

@@ -28,7 +28,12 @@ h1,h2,h3,h4,h5,h6{
 
 .bg-dark{
 	background-color: #d42c2c!important;
+	/* background-image: linear-gradient(to right, white, red); */
 }
+
+.nav-link{
+	white-space: nowrap; 
+	}
 
 /* footer {
 	position: fixed;
@@ -47,7 +52,7 @@ table{
 
 #cart-icon{
 	width:25px;
-	display: inline-block;
+	/* display: inline-block; */
 	margin-left: 15px;
 }
 
@@ -122,6 +127,7 @@ table{
 
 footer {
 	background: #d42c2c;
+	/* background-image: linear-gradient(to right, white, red); */
 	/* background: -webkit-linear-gradient(59deg, #3a6073, #16222a);
 	background: linear-gradient(59deg, #3a6073, #16222a); */
 	color: white;
