@@ -9,6 +9,8 @@ from django.db.models.signals import \
 from django.dispatch import receiver  # Import the receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
+from .constants import STAFF_EMAILS
+from sms import send_sms
 
 from .models import Customer, DeliveryAddress, Reservation, Seat
 
@@ -59,27 +61,55 @@ def update_seat_status(sender, instance, created, **kwargs):
 
 # ----SEND RESERVATION STATUS NOTIFICATION----#
 @receiver(post_save, sender=Reservation)
-def notify_customer(sender, instance, created, **kwargs):
-    if not created:
+def send_notifications(sender, instance, created, **kwargs):
+    if created:
+        customer = instance.customer
+    else:
         customer = Customer.objects.get(pk=instance.customer_id)
-        try:
-            if instance.status == "EXPIRED":
-                return
-            username = customer.customer.username
-            subject = "Reservation Status Notification"
-            domain = Site.objects.get_current().domain
-            relative_path = reverse("canteen:reservations")
-            message = render_to_string(
-                "canteen/reservation_updated.html",
-                {
-                    "url": f"{domain}{relative_path}",
-                    "user": username,
-                    "status": instance.status,
-                },
-            )
-            email_from = settings.DEFAULT_FROM_EMAIL
-            recepient = customer.customer.email
-            recipient_list = [recepient]
-            send_mail(subject, message, email_from, recipient_list)
-        except Exception as e:
-            print(e)
+    try:
+        username = customer.customer.username
+        customer_cellphone = customer.customer.profile.cellphone
+        customer_cellphone = "+264" + customer_cellphone[1:]
+        print(f"CUSTOMER CELLPHONE: {customer_cellphone}")
+        subject = "Seat Reservation Notification"
+        domain = Site.objects.get_current().domain
+        relative_path = reverse("canteen:reservations")
+        seat_number = instance.seat.seat_number
+        customer_message = render_to_string(
+            "canteen/reservation_notifications.html",
+            {
+                "url": f"{domain}{relative_path}",
+                "user": username,
+                "status": instance.status,
+                "seat_number": seat_number,
+            },
+        )
+        staff_message = render_to_string(
+            "canteen/staff_notification.html",
+            {
+                "url": f"{domain}{relative_path}",
+                "seat_number": seat_number
+            },
+        )
+        email_from = settings.DEFAULT_FROM_EMAIL
+        recipient = [customer.customer.email]
+        send_mail(subject, customer_message, email_from, recipient)
+        
+        if instance.status == "PENDING":
+            send_mail(subject, staff_message, email_from, STAFF_EMAILS)
+            sms_message = f"Dear Customer,\nYour reservation for Seat No. {seat_number} has been received and is waiting for approval."
+        elif instance.status == "ACCEPTED":
+            sms_message = f"Dear Customer,\nYour reservation for Seat No. {seat_number} has been accepted."
+        elif instance.status == "DECLINED":
+            sms_message = f"Dear Customer,\nYour reservation for Seat No. {seat_number} has been declined. Please try again later or contact us."
+        else:
+            sms_message = f"Dear Customer,\nYour reservation for Seat No. {seat_number} has expired."
+        print(f"SMS_MESSAGE: {sms_message}")
+        send_sms(
+            sms_message, 
+            settings.DEFAULT_FROM_SMS, 
+            [customer_cellphone], 
+            fail_silently=False
+        )
+    except Exception as e:
+        print(e)

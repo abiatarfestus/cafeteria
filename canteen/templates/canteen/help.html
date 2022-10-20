@@ -1,0 +1,169 @@
+{% extends 'canteen/main.html' %} {% load static %} {% block welcome %}
+<h1>Welcome to the Help Centre</h1>
+<hr>
+<h4><em>Read the instructions and guidelines below to better understand how this platform works.</em></h4>
+<!-- <hr> -->
+{% endblock %} {% block content %}
+<div class="container block-content">
+  <div class="accordion" id="accordionExample">
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <h2 class="mb-0">
+          <button
+            class="btn btn-link btn-block text-left"
+            type="button"
+            data-toggle="collapse"
+            data-target="#collapseOne"
+            aria-expanded="true"
+            aria-controls="collapseOne"
+          >
+            General guidelines
+          </button>
+        </h2>
+      </div>
+      <div
+        id="collapseOne"
+        class="collapse show"
+        aria-labelledby="headingOne"
+        data-parent="#accordionExample"
+      >
+        <div class="card-body">
+          <h4>What it's about</h4>
+          <p>
+            This web application provides a platform for our customers to
+            interact with us online. The platform is aimed at enhancing
+            convenience of our clients by allowing them to place orders as well
+            as reserves seats in the cafeteria from the comfort of your office,
+            home or elsewhere. This reduces frustration from queues while
+            improving efficiency and time management.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingTwo">
+        <h2 class="mb-0">
+          <button
+            class="btn btn-link btn-block text-left collapsed"
+            type="button"
+            data-toggle="collapse"
+            data-target="#collapseTwo"
+            aria-expanded="false"
+            aria-controls="collapseTwo"
+          >
+            User Registration
+          </button>
+        </h2>
+      </div>
+      <div
+        id="collapseTwo"
+        class="collapse"
+        aria-labelledby="headingTwo"
+        data-parent="#accordionExample"
+      >
+        <div class="card-body">
+          <h4>Canteen Staff Registration</h4>
+          <p>
+            The canteen staff responsible for processing customer orders need to
+            be registered and granted with <em>Staff</em> permission by the
+            Admin. NB: Staff user accounts do not have permission to make seat
+            reservations
+          </p>
+          <h4>Customer Registration</h4>
+          <p>
+            Only logged in customers can place orders and reserve seats. A
+            customer can create a personal account by clicking on
+            <a href="{% url 'users:register' %}"
+              >Register on the navigation bar.</a
+            >
+            Once an account is created, an activation request is sent to the
+            Admin. The user can only login to their acount after it has been
+            activated. Once the account is activated, the user will be notified
+            via email. Upon activation, the user can login and update their
+            profile with an image, a residential/delivery address and a
+            cellphone number (to be used for SMS notification).
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingThree">
+        <h2 class="mb-0">
+          <button
+            class="btn btn-link btn-block text-left collapsed"
+            type="button"
+            data-toggle="collapse"
+            data-target="#collapseThree"
+            aria-expanded="false"
+            aria-controls="collapseThree"
+          >
+            Seat Reservation
+          </button>
+        </h2>
+      </div>
+      <div
+        id="collapseThree"
+        class="collapse"
+        aria-labelledby="headingThree"
+        data-parent="#accordionExample"
+      >
+        <div class="card-body">
+          <p>
+            A logged in customer can reserve one of the open seats in the
+            cafeteria. Once a reservation is made, it will be added to the list
+            of active reservations, but with the Status of Pending. A
+            notification is sent to the staff emails to either accept of decline
+            the reservation. (A confirmation of the reservation is also sent to
+            the customer via email and SMS if there's a cellphone number on the
+            customer's profile.) Once the reservation has been
+            accepted/declined, another notification will be sent to the customer
+            via email and SMS. Reservations will be updated to Expired by the
+            staff after it has been used. (Un updated is being developed to
+            automate this process based on time intervals.) The customer can
+            cancel their own reservation at any time from the Reservations list
+            page.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingFour">
+        <h2 class="mb-0">
+          <button
+            class="btn btn-link btn-block text-left collapsed"
+            type="button"
+            data-toggle="collapse"
+            data-target="#collapseFour"
+            aria-expanded="false"
+            aria-controls="collapseFour"
+          >
+            Online Orders
+          </button>
+        </h2>
+      </div>
+      <div
+        id="collapseFour"
+        class="collapse"
+        aria-labelledby="headingThree"
+        data-parent="#accordionExample"
+      >
+        <div class="card-body">
+          <p>
+            Customers can place their orders from the canteen online with or
+            without delivery option. When an order with no delivery is done, the
+            customer will be informed through the phone number on their profile.
+            Customers can use any of the payment methods availabel at checkout
+            page, which include the integrated PayPal or Debit/Credit card.
+            Customer using non-integrated methods such as EFT and cellphone
+            banking must include the payment reference number when submitting
+            the order as no order will be prepared without confirmation that a
+            payment was made.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br><br>
+<h5 style="text-align: center;">Still have some questions? <a href="{% url 'users:register' %}">Contact us here</a> or via our contacts on the footer.</h5> 
+</div>
+{% endblock %}

@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         PermissionRequiredMixin)
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
@@ -15,6 +15,9 @@ from django.views.generic.edit import CreateView
 from .forms import AddressUpdateForm, OrderUpdateForm, ReservationForm
 from .models import *
 from .utils import cartData
+from .forms import ContactForm
+from .constants import ADMIN_EMAILS
+from django.core.mail import send_mail, BadHeaderError
 
 
 def home(request):
@@ -184,14 +187,14 @@ class ReservationCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
 
 # List View
 # Templates for displaying List and Detail views
-list_view = "canteen/list_view.html"
-detail_view = "canteen/detail_view.html"
+reservation_list = "canteen/reservation_list.html"
+reservation_details = "canteen/reservation_details.html"
 
 
 class ReservationListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
     model = Reservation
-    template_name = list_view
+    template_name = reservation_list
 
     def get_queryset(self):
         return Reservation.objects.filter(
@@ -222,3 +225,20 @@ def update_reservation(request, pk, type):
     reservation.save()
     messages.success(request, ("Reservation status successfully updated."))
     return redirect("canteen:reservations")
+
+def contact(request):
+    if request.method == "GET":
+        form = ContactForm()
+    else:
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data["subject"]
+            from_email = form.cleaned_data["from_email"]
+            message = form.cleaned_data['message']
+            try:
+                send_mail(subject, message, from_email, ADMIN_EMAILS)
+            except BadHeaderError:
+                return HttpResponse("Invalid header found.")
+            messages.success(request, ("Message sent successfully. Thank you for engaging us"))
+            return redirect("home")
+    return render(request, "canteen/contact.html", {"form": form})

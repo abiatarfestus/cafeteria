@@ -1,1 +1,2 @@
-Update activation email to be sent customer and remove admin
+Change admin email to canteen's
+Button for staff to expire the reservation

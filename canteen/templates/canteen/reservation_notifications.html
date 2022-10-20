@@ -1,0 +1,22 @@
+{% autoescape off %}
+Dear {{ user }},
+{% if status == "ACCEPTED" %}
+Your reservation for Seat No. {{ seat_number }} has been accepted. If you would like to cancel your reservation go to the 
+Reservations list page: http://{{ url }}.
+
+NB: Reservations expire automatically everyday at 00:00 or once you leave the cafeteria.
+{% elif status == "DECLINED" %}
+Sorry we are unable to accept your reservation at this moment. You may try again later. For more information please contact us.
+{% elif status == "PENDING" %}
+Your reservation for Seat No. {{ seat_number }} was submitted successfully, and it's pending for approval
+by canteen staff! You will receive a notification once your reservation is accepted or declined.
+If you did not make such reservation or you've change your mind, you may cancel the reservations here: 
+http://{{ url }} or contact us.
+{% else %}
+Please take note that your reservation for Seat No. {{ seat_number }} has expired.
+{% endif %}
+Regards,
+Canteen Admin
+Contact: 061-000000/0810000000
+
+{% endautoescape %}

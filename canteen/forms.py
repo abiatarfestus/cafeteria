@@ -57,3 +57,8 @@ class ReservationForm(forms.ModelForm):
         empty_label="Select the seat",
         widget=forms.Select(attrs={"class": "form-control form-control-lg mb-2"}),
     )
+
+class ContactForm(forms.Form):
+    from_email = forms.EmailField(required=True, widget=forms.Select(attrs={"class": "form-control form-control-lg mb-2"}))
+    subject = forms.CharField(required=True, widget=forms.Select(attrs={"class": "form-control form-control-lg mb-2"}))
+    message = forms.CharField(widget=forms.Textarea(attrs={"class": "form-control form-control-lg mb-2"}), required=True)

@@ -31,7 +31,7 @@ def validate_cellphone(value):
 
 class Profile(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE
+        User, on_delete=models.CASCADE, related_name="profile",
     )  # Delete profile when user is deleted
     cellphone = models.CharField(
         max_length=10, null=True, validators=[validate_cellphone]

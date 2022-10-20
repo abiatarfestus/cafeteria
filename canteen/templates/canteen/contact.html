@@ -1,0 +1,19 @@
+{% extends 'canteen/main.html' %}
+{% load static %}
+{% block welcome %}
+<h1>Contact Us</h1>
+<h5><em>-We would love to hear from you. So, please fill out the contact form below-</em></h5>
+<!-- <hr> -->
+{% endblock %}
+{% block content %}
+<div class="container block-content" style="background:white;">
+<h1>Contact Us</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions">
+      <button class="btn btn-outline-primary mb-3" type="submit">Send</button>
+    </div>
+</form>
+</div>
+{% endblock content %}

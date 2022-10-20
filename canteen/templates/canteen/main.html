@@ -70,6 +70,16 @@
               >Menu <span class="sr-only"></span
             ></a>
           </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'canteen:help' %}"
+              >Help Centre <span class="sr-only"></span
+            ></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'canteen:contact' %}"
+              >Contact <span class="sr-only"></span
+            ></a>
+          </li>
         </ul>
         <div class="container-fluid justify-content-end">
           {% if user.is_authenticated %}
