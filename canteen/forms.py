@@ -14,8 +14,7 @@ class AddressUpdateForm(forms.ModelForm):
             "address": forms.TextInput(
                 attrs={
                     "class": "form-control form-control-lg mb-2",
-                    "name": "address",
-                    "id": "address-field",
+                    "name": "address",                    
                 }
             )
         }
@@ -24,17 +23,31 @@ class AddressUpdateForm(forms.ModelForm):
 class OrderUpdateForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ["delivery"]
+        fields = ["payment_method", "delivery", "reference"]
         widgets = {
             "delivery": forms.CheckboxInput(
                 attrs={
                     "type": "checkbox",
-                    "class": "form-check form-check-inline",
+                    "class": "form-check mb-2",
                     "name": "delivery",
-                    "id": "delivery-check",
+                    "id": "delivery",
                 }
-            )
+            ),
+            "payment_method": forms.Select(
+                attrs={
+                    "class": "form-control form-control-lg mb-2",
+                    "id": "paymentMethod",
+                }
+            ),
+            "reference": forms.TextInput(
+                attrs={
+                    "class": "form-control form-control-lg mb-2", 
+                    "disabled": "disabled",
+                    "id": "reference"
+                }
+            ),
         }
+        
 
 
 class ReservationForm(forms.ModelForm):

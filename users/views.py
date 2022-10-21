@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from canteen.utils import cartData
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import View
@@ -27,7 +28,7 @@ def register(request):
             user.is_active = False  # Deactivate account till it is confirmed
             user.save()
             current_site = get_current_site(request)
-            subject = "Activate Your Oshinglish Account"
+            subject = "Account Activation Request"
             message = render_to_string(
                 "registration/account_activation_email.html",
                 {
@@ -77,10 +78,13 @@ def profile(request):
     user_form = UserUpdateForm(instance=request.user)
     profile_form = ProfileUpdateForm(instance=request.user.profile)
     address_form = AddressUpdateForm(instance=request.user.address)
+    data = cartData(request)
+    cartItems = data["cartItems"]
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
         "address_form": address_form,
+        "cartItems": cartItems
     }
     return render(request, "users/profile.html", context)
 

@@ -130,7 +130,7 @@
           <a href="{% url 'canteen:cart' %}">
             <img id="cart-icon" src="{% static 'images/cart.png' %}" />
           </a>
-          <p id="cart-total">{{cartItems}}</p>
+          <p id="cart-total">{% if not cartItems %} 0 {% else %} {{cartItems}} {% endif %}</p>
           {% else %}
           <ul class="nav">
             <li class="nav-item">
@@ -264,5 +264,7 @@
     ></script>
 
     <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+    {% block scripts %}
+    {% endblock scripts %}
   </body>
 </html>

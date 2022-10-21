@@ -8,10 +8,11 @@ urlpatterns = [
     path("cart/", views.cart, name="cart"),
     path("menu/", views.menu, name="menu"),
     path("contact/", views.contact, name="contact"),
+    path("help/", views.help, name="help"),
     path("sub_menu/<str:menu_type>/", views.sub_menu, name="sub_menu"),
     path("checkout/", views.checkout, name="checkout"),
     path("update_item/", views.updateItem, name="update_item"),
-    path("process_order/", views.processOrder, name="process_order"),
+    path("process_order/", views.process_order, name="process_order"),
     path("reservations/", views.ReservationListView.as_view(), name="reservations"),
     path("reserve_seat/", views.ReservationCreateView.as_view(), name="reserve_seat"),
     path(
@@ -19,5 +20,5 @@ urlpatterns = [
         views.update_reservation,
         name="update_reservation",
     ),
-    path("help/", TemplateView.as_view(template_name="canteen/help.html"), name="help"),
+    # path("help/", TemplateView.as_view(template_name="canteen/help.html"), name="help"),
 ]

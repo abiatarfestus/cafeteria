@@ -21,12 +21,18 @@ from django.core.mail import send_mail, BadHeaderError
 
 
 def home(request):
-    return render(request, "canteen/home.html", {})
+    data = cartData(request)
+    cartItems = data["cartItems"]
+    context = {"cartItems": cartItems}
+    return render(request, "canteen/home.html", context)
 
 
 # @login_required
 def menu(request):
-    return render(request, "canteen/menu.html")
+    data = cartData(request)
+    cartItems = data["cartItems"]
+    context = {"cartItems": cartItems}
+    return render(request, "canteen/menu.html", context)
 
 
 @login_required
@@ -122,7 +128,7 @@ def updateItem(request):
 
 
 @login_required
-def processOrder(request):
+def process_order(request):
     transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
 
@@ -172,12 +178,12 @@ class ReservationCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView)
         return Seat.objects.filter(status="OPEN").count()
 
     def get_context_data(self, **kwargs):
-        data = cartData(self.request)
-        cartItems = data["cartItems"]
         context = super(ReservationCreateView, self).get_context_data(**kwargs)
         context["heading"] = "Reserve your seat in the Cafeteria"
         context["active_reservists"] = self.get_active_reservists()
         context["open_seats"] = self.num_of_open_seats()
+        data = cartData(self.request)
+        cartItems = data["cartItems"]
         context["cartItems"] = cartItems
         return context
 
@@ -241,4 +247,14 @@ def contact(request):
                 return HttpResponse("Invalid header found.")
             messages.success(request, ("Message sent successfully. Thank you for engaging us!"))
             return redirect("home")
-    return render(request, "canteen/contact.html", {"form": form})
+    
+    data = cartData(request)
+    cartItems = data["cartItems"]
+    context = {"cartItems": cartItems, "form": form}
+    return render(request, "canteen/contact.html", context)
+
+def help(request):
+    data = cartData(request)
+    cartItems = data["cartItems"]
+    context = {"cartItems": cartItems}
+    return render(request, "canteen/help.html", context)

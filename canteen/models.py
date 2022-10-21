@@ -198,6 +198,17 @@ class Order(models.Model):
         ("CANCELLED", "Cancelled"),
         ("COMPLETED", "Completed"),
     ]
+
+    PAYMENT_METHOD = [
+        ("", "Select a Payment Method"),
+        ("PAYPAL", "PayPal"),
+        ("CREDIT_OR_DEBIT CARD", "Credit/Debit Card"),
+        ("EFT", "EFT"),
+        ("EWALLET", "eWallet"),
+        ("EASYWALLET", "EasyWallet"),
+        ("BLUEWALLET", "BlueWallet"),
+        ("CASH", "Cash"),
+    ]
     customer = models.ForeignKey(
         Customer,
         on_delete=models.SET_NULL,
@@ -208,6 +219,8 @@ class Order(models.Model):
     date_ordered = models.DateTimeField(auto_now_add=True)
     delivery = models.BooleanField(default=False)
     submitted = models.BooleanField(default=False)
+    reference = models.CharField(max_length=100, null=True, blank=True, help_text="Payment reference number for EFT and Wallets")
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD)
     status = models.CharField(max_length=9, choices=ORDER_STATUS, default="OPEN")
     transaction_id = models.CharField(max_length=100, null=True)
 
