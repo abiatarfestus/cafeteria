@@ -14,7 +14,6 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-info" id="confirmDiv" role="alert">
-                    <h5>Confirm that the following details are correct:</h5>
                 </div>
             </div>
             <div class="modal-footer">
@@ -45,6 +44,21 @@
 						<br>
 						{% for field in address_form %}
 						<div class="fieldWrapper" id="addressField" hidden>
+							{% if field.errors %}
+							<div class="alert alert-warning" role="alert">
+								{{ field.errors }}
+							</div>
+							{% endif %}
+							{{ field.label }}:
+							{{ field }}
+							{% if field.help_text %}
+							<small class="form-text text-muted">{{ field.help_text|safe }}</small>
+							{% endif %}
+						</div>
+						{% endfor %}
+						<br>
+						{% for field in profile_form %}
+						<div class="fieldWrapper" id="cellphoneField">
 							{% if field.errors %}
 							<div class="alert alert-warning" role="alert">
 								{{ field.errors }}
@@ -94,13 +108,21 @@
 	var total_items = "{{order.get_cart_items}}"
 	var form = document.getElementById('form')
 	var total_cost = "{{order.get_cart_total|floatformat:2}}"
-	// var items = "{{items}}"
-	// console.log("ITEMS: ", items)
-	// items = items.map(function (item) {
-	// 	return item.product.name;
-	// });
+	// var select = document.getElementById("paymentMethod")
+	// var payment_method = select.options[select.selectedIndex].value;
+	// console.log("SELECTED PAYMENT:", payment_method)
+	// var orderData = {
+	// 		"total_items": total_items,
+	// 		"total_cost": total_cost,
+	// 		"payment_method": payment_method,
+	// 		"reference": form.reference.value,
+	// 		"delivery": form.delivery.checked,
+	// 		"delivery_address": form.address.value,
+	// 		"cellphone": form.cellphone.value,
+	// 		// "order_items": items,
+	// 	}
 
-	 function submitFormData(){
+	 function previewFormData(){
 		var orderData = {
 			"total_items": total_items,
 			"total_cost": total_cost,
@@ -108,62 +130,84 @@
 			"reference": form.reference.value,
 			"delivery": form.delivery.checked,
 			"delivery_address": form.address.value,
+			"cellphone": form.cellphone.value,
 			// "order_items": items,
 		}
-	    console.log('orderData:', orderData)
+
 		var div = document.getElementById("confirmDiv");
-		var tag = document.createElement("p");
-		var text = document.createTextNode(`Total Items: ${orderData["total_items"]}`);
-		tag.appendChild(text);
+		div.innerHTML = ""
+		var tag = document.createElement("h5");
+		tag.innerHTML = "Confirm that the following details are correct:";
 		div.appendChild(tag);
 
 		tag = document.createElement("p");
-		text = document.createTextNode(`Total Cost: N$${orderData["total_cost"]}`);
-		tag.appendChild(text);
+		tag.innerHTML = `<b>Total Items:</b> ${orderData["total_items"]}`
 		div.appendChild(tag);
 
 		tag = document.createElement("p");
-		text = document.createTextNode(`Payment Method: ${orderData["payment_method"]}`);
-		tag.appendChild(text);
+		tag.innerHTML = `<b>Total Cost:</b> N$${orderData["total_cost"]}`;
 		div.appendChild(tag);
 
-		if (orderData["reference"] != "") {
+		tag = document.createElement("p");
+		tag.innerHTML = `<b>Payment Method:</b> ${orderData["payment_method"]}`;
+		div.appendChild(tag);
+
+		var wallets = ["EFT", "EWALLET", "EASYWALLET", "BLUEWALLET"];
+		if (wallets.includes(orderData["payment_method"])) {
 			tag = document.createElement("p");
-			text = document.createTextNode(`Payment Reference: ${orderData["reference"]}`);
-			tag.appendChild(text);
+			tag.innerHTML = `<b>Payment Reference:</b> ${orderData["reference"]}`;
 			div.appendChild(tag);
-		} 
-		else if (orderData["delivery"] == true) {
+		};
+
+		if (orderData["delivery"] == true) {
 			tag = document.createElement("p");
-			text = document.createTextNode(`To be delivered: ${orderData["delivery"]}`);
-			tag.appendChild(text);
+			tag.innerHTML = `<b>To be delivered:</b> Yes`;
 			div.appendChild(tag);
 
 			tag = document.createElement("p");
-			text = document.createTextNode(`Delivery Address: ${orderData["delivery_address"]}`);
-			tag.appendChild(text);
+			tag.innerHTML = `<b>Delivery Address:</b> ${orderData["delivery_address"]}`;
 			div.appendChild(tag);
 		} 
+		else if (orderData["delivery"] == false) {
+			tag = document.createElement("p");
+			tag.innerHTML = `<b>To be delivered:</b> No`;
+			div.appendChild(tag);
+		}
+
+		tag = document.createElement("p");
+		tag.innerHTML = `<b>Cellphone Number:</b> ${orderData["cellphone"]}`;
+		div.appendChild(tag);
+	}
 		
+	function submitFormData(){
+		var orderData = {
+			"total_items": total_items,
+			"total_cost": total_cost,
+			"payment_method": form.payment_method.value,
+			"reference": form.reference.value,
+			"delivery": form.delivery.checked,
+			"delivery_address": form.address.value,
+			"cellphone": form.cellphone.value,
+			// "order_items": items,
+		}
+		var url = "/canteen/process_order/"
 
-	    	// var url = "/canteen/process_order/"
-	    	// fetch(url, {
-	    	// 	method:'POST',
-	    	// 	headers:{
-	    	// 		'Content-Type':'applicaiton/json',
-	    	// 		'X-CSRFToken':csrftoken,
-	    	// 	}, 
-	    	// 	body:JSON.stringify({'form':orderFormData, 'address':addressInfo}),
-	    		
-	    	// })
-	    	// .then((response) => response.json())
-	    	// .then((data) => {
-			// 	  console.log('Success:', data);
-			// 	  alert('Transaction completed');  
-			// 	  window.location.href = "{% url 'home' %}"
-
-			// 	})
-	    }
+		fetch(url, {
+			method:'POST',
+			headers:{
+				'Content-Type':'applicaiton/json',
+				'X-CSRFToken':csrftoken,
+			}, 
+			body:JSON.stringify({'form':orderData}),
+			
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			// console.log('Success:', data);
+			// alert('Transaction completed');  
+			window.location.href = "{% url 'home' %}"
+		})
+	}
 </script>
 
 <script>
@@ -176,49 +220,61 @@
 		var address = document.getElementById('addressField');
 		if (delivery.checked == true) {
 			address.hidden = false;
+			address.required = true;
 		}
 		else {
 			address.hidden = true;
+			address.required = false;
 		}
 	}
 
-	function paymentMethod() {
+	function updatePaymentMethod() {
 		var paymentMethod = document.getElementById('paymentMethod');
 		var reference = document.getElementById('reference');
 		if (paymentMethod.value == "PAYPAL") {
 			submittButton.innerHTML = "Checkout With PayPal";
 			submittButton.hidden = false;
+			reference.value = "";
 			reference.disabled = true;
+			reference.required = false;
 		} 
 		else if (paymentMethod.value == "CREDIT_OR_DEBIT CARD") {
 			submittButton.innerHTML = "Checkout With Credit/Debit Card";
 			submittButton.hidden = false;
+			reference.value = "";
 			reference.disabled = true;
+			reference.required = false;
 		} 
 		else if (paymentMethod.value == "EFT") {
 			submittButton.innerHTML = "Checkout With EFT";
 			submittButton.hidden = false;
 			reference.disabled = false;
+			reference.required = true;
 		} 
 		else if (paymentMethod.value == "EWALLET") {
 			submittButton.innerHTML = "Checkout With eWallet";
 			submittButton.hidden = false;
 			reference.disabled = false;
+			reference.required = true;
 		} 
 		else if (paymentMethod.value == "EASYWALLET") {
 			submittButton.innerHTML = "Checkout With EasyWallet";
 			submittButton.hidden = false;
 			reference.disabled = false;
+			reference.required = true;
 		} 
 		else if (paymentMethod.value == "BLUEWALLET") {
 			submittButton.innerHTML = "Checkout With BlueWallet";
 			submittButton.hidden = false;
 			reference.disabled = false;
+			reference.required = true;
 		} 
 		else if (paymentMethod.value == "CASH") {
 			submittButton.innerHTML = "Checkout With Cash";
 			submittButton.hidden = false;
+			reference.value = "";
 			reference.disabled = true;
+			reference.required = false;
 		} 
 		else {
 			submittButton.hidden = true;
@@ -228,19 +284,13 @@
 	}
 	
 	deliveryOption.addEventListener('change', showAddress)
-	payment.addEventListener('change', paymentMethod)
-	document.getElementById('submitButton').addEventListener('click', submitFormData)
+	payment.addEventListener('change', updatePaymentMethod)
+	document.getElementById('submitButton').addEventListener('click', previewFormData)
 </script>
 <script>
     // Confirm Order
-    var processOrderUrl = "{% url 'canteen:process_order' %}"
-
-    function confirmOrder(event) {
-        window.location.href = processOrderUrl;
-    }
-
     var confirmOrderButton = document.getElementById("confirmOrderButton"); // Find the modal button element in the page
-    confirmOrderButton.onclick = confirmOrder;
+    confirmOrderButton.onclick = submitFormData;
 </script>
 
 {% endblock scripts %}

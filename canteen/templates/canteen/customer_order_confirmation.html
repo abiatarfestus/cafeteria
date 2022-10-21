@@ -1,0 +1,29 @@
+{% autoescape off %}
+Dear {{ user }},
+Your order was successfully submitted. Below are the details of your order:
+Order Number: {{order.id}}
+Transaction ID: {{order.transaction_id}}
+Number of Items: {{order_items.count}}
+Total Cost: {{total_cost}}
+Payment Method: {{order.payment_method}}
+{% if order.reference %}
+Reference Number: {{order.reference}}
+{% endif %}
+Delivery: {{order.delivery}}
+{% if order.delivery %}
+Delivery Address: {{address}}
+{% endif %}
+Cellphone Number: {{cellphone}}
+Order Items: 
+{% for item in order_items %}
+x{{item.quantity}} {{item.product.name}} @N${{item.product.price}} each
+{% endfor %}
+
+You will be notified when your order is ready.
+Thanks for choosing us!
+
+Regards,
+Canteen Admin
+Contact: 061-000000/0810000000
+
+{% endautoescape %}

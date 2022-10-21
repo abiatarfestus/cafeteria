@@ -1,6 +1,6 @@
 import datetime
 import json
-
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import (LoginRequiredMixin,
@@ -12,12 +12,15 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView
 
-from .forms import AddressUpdateForm, OrderUpdateForm, ReservationForm
+from .forms import AddressUpdateForm, OrderUpdateForm, ReservationForm, ProfileUpdateForm
 from .models import *
 from .utils import cartData
 from .forms import ContactForm
+from users.models import Profile
 from .constants import ADMIN_EMAILS
+from .constants import STAFF_EMAILS
 from django.core.mail import send_mail, BadHeaderError
+from django.template.loader import render_to_string
 
 
 def home(request):
@@ -70,6 +73,7 @@ def checkout(request):
     if request.method == "POST":
         order_form = OrderUpdateForm(request.POST, instance=order)
         address_form = AddressUpdateForm(request.POST, instance=request.user.address)
+        profile_form = ProfileUpdateForm(request.POST, instance=request.user.profile)
         if order_form.is_valid() and address_form.is_valid:
             order_form.save()
             address_form.save()
@@ -86,16 +90,19 @@ def checkout(request):
                 "cartItems": cartItems,
                 "user_form": order_form,
                 "address_form": address_form,
+                "profile_form": profile_form,
             }
             return render(request, "canteen/checkout.html", context)
     order_form = OrderUpdateForm(instance=order)
     address_form = AddressUpdateForm(instance=request.user.address)
+    profile_form = ProfileUpdateForm(instance=request.user.profile)
     context = {
         "items": items,
         "order": order,
         "cartItems": cartItems,
         "order_form": order_form,
         "address_form": address_form,
+        "profile_form": profile_form,
     }
     return render(request, "canteen/checkout.html", context)
 
@@ -138,21 +145,77 @@ def process_order(request):
     # else:
     #     customer, order = guestOrder(request, data)
 
-    total = float(data["form"]["total"])
+    total_cost = float(data["form"]["total_cost"])
     delivery = data["form"]["delivery"]
-    address = data["address"]["address"]
+    payment_method = data["form"]["payment_method"]
+    if "delivery_address" in data["form"]:
+        address = data["form"]["delivery_address"]
+    else:
+        address = None
+    if "reference" in data["form"]:
+        reference = data["form"]["reference"]
+    else:
+        reference = None
+    if "cellphone" in data["form"]:
+        cellphone = data["form"]["cellphone"]
+    else:
+        cellphone = None
     order.transaction_id = transaction_id
 
     delivery_address, created = DeliveryAddress.objects.get_or_create(user=request.user)
-    delivery_address.address = address
-    delivery_address.save()
+    if address:
+        delivery_address.address = address
+        delivery_address.save()
+
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    if cellphone:
+        profile.cellphone = cellphone
+        profile.save()
 
     if delivery:
         order.delivery = True
-    if total == order.get_cart_total:
+    if total_cost == order.get_cart_total:
         order.submitted = True
         order.status = "SUBMITTED"
     order.save()
+
+    print(order.submitted)
+    if order.submitted:
+        try:
+            print("Sending email...")
+            username = request.user.username
+            cellphone = request.user.profile.cellphone
+            address = request.user.address.address
+            order_items = OrderItem.objects.filter(order=order)
+            subject = "Confirmation of Order"
+            customer_message = render_to_string(
+                "canteen/customer_order_confirmation.html",
+                {
+                    "cellphone": cellphone,
+                    "user": username,
+                    "address": address,
+                    "order": order,
+                    "order_items": order_items,
+                    "total_cost": total_cost,
+                },
+            )
+            # staff_message = render_to_string(
+            #     "canteen/staff_order_confirmation.html",
+            #     {
+            #         "order": order,
+            #         "order_items": order_items,
+            #         "total_cost": total_cost,
+            #         "cellphone": cellphone,
+            #         "user": username,
+            #         "address": address,
+            #     },
+            # )
+            email_from = settings.DEFAULT_FROM_EMAIL
+            recipient = [request.user.email]
+            send_mail(subject, customer_message, email_from, recipient)
+            # send_mail(subject, staff_message, email_from, STAFF_EMAILS)
+        except Exception as e:
+            print(e)
 
     return JsonResponse("Payment submitted..", safe=False)
 

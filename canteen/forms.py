@@ -2,6 +2,7 @@ from unicodedata import name
 
 from django import forms
 from pyexpat import model
+from users.models import Profile
 
 from .models import Customer, DeliveryAddress, Order, Reservation, Seat
 
@@ -14,7 +15,21 @@ class AddressUpdateForm(forms.ModelForm):
             "address": forms.TextInput(
                 attrs={
                     "class": "form-control form-control-lg mb-2",
-                    "name": "address",                    
+                    "name": "address",
+                    "required": True,                 
+                }
+            )
+        }
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["cellphone"]
+        widgets = {
+            "cellphone": forms.TextInput(
+                attrs={
+                    "class": "form-control form-control-lg mb-2",
+                    "required":True,
                 }
             )
         }
@@ -37,13 +52,15 @@ class OrderUpdateForm(forms.ModelForm):
                 attrs={
                     "class": "form-control form-control-lg mb-2",
                     "id": "paymentMethod",
+                    "required":True
                 }
             ),
             "reference": forms.TextInput(
                 attrs={
                     "class": "form-control form-control-lg mb-2", 
                     "disabled": "disabled",
-                    "id": "reference"
+                    "id": "reference",
+                    "required":True,
                 }
             ),
         }
