@@ -21,6 +21,8 @@ from .constants import ADMIN_EMAILS
 from .constants import STAFF_EMAILS
 from django.core.mail import send_mail, BadHeaderError
 from django.template.loader import render_to_string
+from django.template.loader import get_template
+from django.template import Context
 
 
 def home(request):
@@ -161,6 +163,7 @@ def process_order(request):
     else:
         cellphone = None
     order.transaction_id = transaction_id
+    order.payment_method = payment_method
 
     delivery_address, created = DeliveryAddress.objects.get_or_create(user=request.user)
     if address:
@@ -181,41 +184,47 @@ def process_order(request):
 
     print(order.submitted)
     if order.submitted:
-        try:
-            print("Sending email...")
-            username = request.user.username
-            cellphone = request.user.profile.cellphone
-            address = request.user.address.address
-            order_items = OrderItem.objects.filter(order=order)
-            subject = "Confirmation of Order"
-            customer_message = render_to_string(
-                "canteen/customer_order_confirmation.html",
-                {
-                    "cellphone": cellphone,
-                    "user": username,
-                    "address": address,
-                    "order": order,
-                    "order_items": order_items,
-                    "total_cost": total_cost,
-                },
-            )
-            # staff_message = render_to_string(
-            #     "canteen/staff_order_confirmation.html",
-            #     {
-            #         "order": order,
-            #         "order_items": order_items,
-            #         "total_cost": total_cost,
-            #         "cellphone": cellphone,
-            #         "user": username,
-            #         "address": address,
-            #     },
-            # )
-            email_from = settings.DEFAULT_FROM_EMAIL
-            recipient = [request.user.email]
-            send_mail(subject, customer_message, email_from, recipient)
-            # send_mail(subject, staff_message, email_from, STAFF_EMAILS)
-        except Exception as e:
-            print(e)
+        submitted = True
+    else:
+        submitted = False
+    try:
+        print("Sending email...")
+        username = f"{request.user.first_name} {request.user.last_name}"
+        cellphone = request.user.profile.cellphone
+        address = request.user.address.address
+        order_items = OrderItem.objects.filter(order=order)
+        subject = "Confirmation of Order"
+        customer_message = render_to_string(
+            "canteen/customer_order_confirmation.html",
+            {
+                "cellphone": cellphone,
+                "user": username,
+                "address": address,
+                "order": order,
+                "order_items": order_items,
+                "total_cost": total_cost,
+                "submitted": submitted,
+            },
+        )
+        
+        # staff_message = render_to_string(
+        #     "canteen/staff_order_confirmation.html",
+        #     {
+        #         "order": order,
+        #         "order_items": order_items,
+        #         "total_cost": total_cost,
+        #         "cellphone": cellphone,
+        #         "user": username,
+        #         "address": address,
+                # "submitted": submitted,
+        #     },
+        # )
+        email_from = settings.DEFAULT_FROM_EMAIL
+        recipient = [request.user.email]
+        send_mail(subject, customer_message, email_from, recipient, html_message=customer_message)
+        # send_mail(subject, staff_message, email_from, STAFF_EMAILS)
+    except Exception as e:
+        print(e)
 
     return JsonResponse("Payment submitted..", safe=False)
 

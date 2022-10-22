@@ -219,7 +219,7 @@ class Order(models.Model):
     date_ordered = models.DateTimeField(auto_now_add=True)
     delivery = models.BooleanField(default=False)
     submitted = models.BooleanField(default=False)
-    reference = models.CharField(max_length=100, null=True, blank=True, help_text="Payment reference number for EFT and Wallets")
+    reference = models.CharField(max_length=100, null=True, blank=True, help_text="Payment reference number for EFT and Wallets. For wallets, send payment to 0810000000. EFT should be made to US Cafeteria, FNB Current Acc. 62000000000, Branch Code 58117.")
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD)
     status = models.CharField(max_length=9, choices=ORDER_STATUS, default="OPEN")
     transaction_id = models.CharField(max_length=100, null=True)

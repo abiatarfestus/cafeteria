@@ -74,8 +74,7 @@
 					</fieldset>
 					<hr>
 					<!-- <input id="submitButton" class="btn btn-success btn-block" type="submit" value="Continue" hidden> -->
-					<button type="button" id="submitButton" class="btn btn-success btn-block" data-toggle="modal"
-                        data-target="#confirmOrderAlert" hidden>
+					<button type="button" id="submitButton" class="btn btn-success btn-block" hidden>
                     </button></li>
 				  </form>
 			</div>
@@ -108,19 +107,6 @@
 	var total_items = "{{order.get_cart_items}}"
 	var form = document.getElementById('form')
 	var total_cost = "{{order.get_cart_total|floatformat:2}}"
-	// var select = document.getElementById("paymentMethod")
-	// var payment_method = select.options[select.selectedIndex].value;
-	// console.log("SELECTED PAYMENT:", payment_method)
-	// var orderData = {
-	// 		"total_items": total_items,
-	// 		"total_cost": total_cost,
-	// 		"payment_method": payment_method,
-	// 		"reference": form.reference.value,
-	// 		"delivery": form.delivery.checked,
-	// 		"delivery_address": form.address.value,
-	// 		"cellphone": form.cellphone.value,
-	// 		// "order_items": items,
-	// 	}
 
 	 function previewFormData(){
 		var orderData = {
@@ -132,6 +118,16 @@
 			"delivery_address": form.address.value,
 			"cellphone": form.cellphone.value,
 			// "order_items": items,
+		}
+
+		var wallets = ["EFT", "EWALLET", "EASYWALLET", "BLUEWALLET"];
+		if (wallets.includes(orderData["payment_method"]) && orderData["reference"]=="") {
+			alert("A reference needs to be provided for this type of payment");
+			return false;
+		}
+		else if (orderData["delivery"] == true && orderData["delivery_address"]=="") {
+			alert("You've chosen delivery, but did not provide a delivery address. Please add an address or remove delivery from your order.");
+			return false;
 		}
 
 		var div = document.getElementById("confirmDiv");
@@ -177,6 +173,8 @@
 		tag = document.createElement("p");
 		tag.innerHTML = `<b>Cellphone Number:</b> ${orderData["cellphone"]}`;
 		div.appendChild(tag);
+
+		$('#confirmOrderAlert').modal("show");
 	}
 		
 	function submitFormData(){
@@ -203,10 +201,10 @@
 		})
 		.then((response) => response.json())
 		.then((data) => {
-			// console.log('Success:', data);
-			// alert('Transaction completed');  
-			window.location.href = "{% url 'home' %}"
+			// console.log('Success:', data);  
+			window.location.href = "{% url 'canteen:cart' %}"
 		})
+		alert("Transaction completed! Your order is being processed! Please check your email for confirmation. If no confirmation is received, please contact us.");
 	}
 </script>
 
