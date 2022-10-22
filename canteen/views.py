@@ -164,6 +164,7 @@ def process_order(request):
         cellphone = None
     order.transaction_id = transaction_id
     order.payment_method = payment_method
+    order.reference = reference
 
     delivery_address, created = DeliveryAddress.objects.get_or_create(user=request.user)
     if address:
