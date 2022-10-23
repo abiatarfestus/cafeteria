@@ -208,22 +208,22 @@ def process_order(request):
             },
         )
         
-        # staff_message = render_to_string(
-        #     "canteen/staff_order_confirmation.html",
-        #     {
-        #         "order": order,
-        #         "order_items": order_items,
-        #         "total_cost": total_cost,
-        #         "cellphone": cellphone,
-        #         "user": username,
-        #         "address": address,
-                # "submitted": submitted,
-        #     },
-        # )
+        staff_message = render_to_string(
+            "canteen/staff_order_confirmation.html",
+            {
+                "order": order,
+                "order_items": order_items,
+                "total_cost": total_cost,
+                "cellphone": cellphone,
+                "user": username,
+                "address": address,
+                "submitted": submitted,
+            },
+        )
         email_from = settings.DEFAULT_FROM_EMAIL
         recipient = [request.user.email]
         send_mail(subject, customer_message, email_from, recipient, html_message=customer_message)
-        # send_mail(subject, staff_message, email_from, STAFF_EMAILS)
+        send_mail(subject, staff_message, email_from, STAFF_EMAILS, html_message=staff_message)
     except Exception as e:
         print(e)
 

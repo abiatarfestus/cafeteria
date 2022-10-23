@@ -1,78 +1,85 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-            table, th, td {
-                border-spacing: 30px;
-                text-align: left;
-            }
-        </style>
-    </head>
-    <body style="background-color: #dbd3d3;">
-        <div>
-        <div style="background-color: #d42c2c;">
-            <br>
-            <h1>Order Confirmation</h1>
-            <br>
-        </div>
-        <p>Dear {{ user }},</p>
-        {% if submitted %}
-        <p>Your order was successfully submitted.</p>
-        <h3>Order Details</h3>
-        <hr>
-        <p><b>Order Number: </b>{{order.id}}</p>
-        <p><b>Transaction ID: </b>{{order.transaction_id}}</p>
-        <p><b>Number of Items: </b>{{order_items.count}}</p>
-        <p><b>Total Cost: </b>N${{total_cost}}</p>
-        <p><b>Payment Method: </b>{{order.payment_method}}</p>
-        {% if order.reference %}
-        <p><b>Reference Number: </b>{{order.reference}}</p>
-        {% endif %}
-        <p><b>Delivery: </b>{% if order.delivery %} Yes {% else %} No {% endif %}</p>
-        {% if order.delivery %}
-        <p><b>Delivery Address: </b>{{address}}</p>
-        {% endif %}
-        <p><b>Cellphone Number: </b>{{cellphone}}</p>
-        <p><b>Order Items:</b></p> 
-        <table>
+  <head>
+    <style>
+      table,
+      th,
+      td {
+        border-spacing: 30px;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body style="background-color: #dbd3d3">
+    <div>
+      <div style="background-color: #d42c2c">
+        <br />
+        <h1>Order Confirmation</h1>
+        <br />
+      </div>
+      <p>Dear {{ user }},</p>
+      {% if submitted %}
+      <p>Your order was successfully submitted.</p>
+      <h3>Order Details</h3>
+      <hr />
+      <p><b>Order Number: </b>{{order.id}}</p>
+      <p><b>Transaction ID: </b>{{order.transaction_id}}</p>
+      <p><b>Number of Items: </b>{{order_items.count}}</p>
+      <p><b>Total Cost: </b>N${{total_cost}}</p>
+      <p><b>Payment Method: </b>{{order.payment_method}}</p>
+      {% if order.reference %}
+      <p><b>Reference Number: </b>{{order.reference}}</p>
+      {% endif %}
+      <p>
+        <b>Delivery: </b>{% if order.delivery %} Yes {% else %} No {% endif %}
+      </p>
+      {% if order.delivery %}
+      <p><b>Delivery Address: </b>{{address}}</p>
+      {% endif %}
+      <p><b>Cellphone Number: </b>{{cellphone}}</p>
+      <p><b>Order Items:</b></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total Price</th>
+          </tr>
+        </thead>
 
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total Price</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for item in order_items %}
-                    <tr>
-                        <td>{{ item.product.name }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>N${{ item.product.price|floatformat:2 }}</td>
-                        <td>N${{ item.get_total|floatformat:2 }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <p>You will be notified when your order is ready.</p>
-        <p>Thanks for choosing us!</p>
-        {% else %}
-        <p>It appears that you tried to submit an order, but it was not submitted successfully. Please try to submit another order, and if the problem persists, do contact us.</p>
-        <p></p>We apologise for the inconvenience.</p>
-        {% endif %}
-        <p>Regards,</p>
-        <div style="background-color: #d42c2c;">
-            <ul style="list-style: none;">
-                <li>Canteen Admin</li>
-                <li>No. 45, Main campus</li>
-                <li>Phone: 06100000/081000000</li>
-                <li>Email: unamcafeteria@gmail.com</li>
-            </ul>
-        </div>
-        <hr>
+        <tbody>
+          {% for item in order_items %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>N${{ item.product.price|floatformat:2 }}</td>
+            <td>N${{ item.get_total|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <hr>
+      <p>You will be notified when your order is ready.</p>
+      <p>Thanks for choosing us!</p>
+      {% else %}
+      <p>
+        It appears that you tried to submit an order, but it was not submitted
+        successfully. Please try to submit another order, and if the problem
+        persists, do contact us.
+      </p>
+      <p>We apologise for the inconvenience.</p>
+      {% endif %}
+      <p>Regards,</p>
+      <div style="background-color: #d42c2c">
+        <ul style="list-style: none">
+          <li>Cafeteria Admin</li>
+          <li>No. 45, Main campus</li>
+          <li>Phone: 06100000/081000000</li>
+          <li>Email: unamcafeteria@gmail.com</li>
+        </ul>
+      </div>
+      <hr />
     </div>
-    </body>
+  </body>
 </html>

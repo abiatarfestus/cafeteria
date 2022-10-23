@@ -293,4 +293,4 @@ class DeliveryAddress(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.address
+        return str(self.user)

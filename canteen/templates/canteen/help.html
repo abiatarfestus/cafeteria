@@ -1,7 +1,12 @@
 {% extends 'canteen/main.html' %} {% load static %} {% block welcome %}
 <h1>Help Centre</h1>
-<hr>
-<h4><em>Read the instructions and guidelines below to better understand how this platform works.</em></h4>
+<hr />
+<h4>
+  <em
+    >Read the instructions and guidelines below to better understand how this
+    platform works.</em
+  >
+</h4>
 <!-- <hr> -->
 {% endblock %} {% block content %}
 <div class="container block-content">
@@ -62,7 +67,7 @@
         data-parent="#accordionExample"
       >
         <div class="card-body">
-          <h4>Canteen Staff Registration</h4>
+          <h4>Cafeteria Staff Registration</h4>
           <p>
             The canteen staff responsible for processing customer orders need to
             be registered and granted with <em>Staff</em> permission by the
@@ -71,17 +76,16 @@
           </p>
           <h4>Customer Registration</h4>
           <p>
-            Only logged in customers can place orders and reserve seats online. A
-            customer can create a personal user account by navigating to
-            <a href="{% url 'users:register' %}"
-              >Register.</a
-            >
+            Only logged in customers can place orders and reserve seats online.
+            A customer can create a personal user account by navigating to
+            <a href="{% url 'users:register' %}">Register.</a>
             Once an account is created, an activation request is sent to the
             Admin. The user can only login to their acount after it has been
-            activated by the Admin. Once the account is activated, the user will be notified
-            via email. Upon activation, the user can login to their account and update their
-            profile with an image, a residential/delivery address and a
-            cellphone number (to be used for SMS notification).
+            activated by the Admin. Once the account is activated, the user will
+            be notified via email. Upon activation, the user can login to their
+            account and update their profile with an image, a
+            residential/delivery address and a cellphone number (to be used for
+            SMS notification).
           </p>
         </div>
       </div>
@@ -112,16 +116,16 @@
             A logged in customer can reserve one of the open seats in the
             cafeteria. Once a reservation is made, it will be added to the list
             of active reservations, but with the Status of <em>Pending</em>. A
-            notification is sent to staff emails to either accept or decline
-            the reservation. (A confirmation of the reservation is also sent to
-            the customer via email and SMS if there's a cellphone number on the
+            notification is sent to staff emails to either accept or decline the
+            reservation. (A confirmation of the reservation is also sent to the
+            customer via email and SMS if there's a cellphone number on the
             customer's profile.) Once the reservation has been
             accepted/declined, another notification will be sent to the customer
-            via email and SMS. Reservations will be updated to <em>Expired</em> status by the
-            staff after it has been used. (An update is being developed to
-            automate this process based on time intervals.) The customer can
-            cancel their own reservation at any time from the Reservations list
-            page.
+            via email and SMS. Reservations will be updated to
+            <em>Expired</em> status by the staff after it has been used. (An
+            update is being developed to automate this process based on time
+            intervals.) The customer can cancel their own reservation at any
+            time from the Reservations list page.
           </p>
         </div>
       </div>
@@ -149,21 +153,24 @@
       >
         <div class="card-body">
           <p>
-            Customers can place their orders online with or
-            without delivery option. When an order with no delivery is done, the
-            customer will be informed through the phone number on their profile.
-            Customers can use any of the payment methods availabel at checkout
-            page, which include the integrated PayPal or Debit/Credit card.
-            Customer using non-integrated methods such as EFT and cellphone
-            banking must include the payment reference number when submitting
-            the order as no order will be prepared without confirmation that a
-            payment was made.
+            Customers can place their orders online with or without delivery
+            option. When an order with no delivery is done, the customer will be
+            informed through the phone number on their profile. Customers can
+            use any of the payment methods availabel at checkout page, which
+            include the integrated PayPal or Debit/Credit card. Customer using
+            non-integrated methods such as EFT and cellphone banking must
+            include the payment reference number when submitting the order as no
+            order will be prepared without confirmation that a payment was made.
           </p>
         </div>
       </div>
     </div>
   </div>
-  <br><br>
-<h5 style="text-align: center;">Still have some questions? <a href="{% url 'canteen:contact' %}">Contact us here</a> or via our contacts on the footer.</h5> 
+  <br /><br />
+  <h5 style="text-align: center">
+    Still have some questions?
+    <a href="{% url 'canteen:contact' %}">Contact us here</a> or via our
+    contacts on the footer.
+  </h5>
 </div>
 {% endblock %}

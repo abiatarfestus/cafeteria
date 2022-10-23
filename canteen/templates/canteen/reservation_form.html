@@ -1,29 +1,28 @@
-{% extends 'canteen/main.html' %}
-{% load static %}
-<br>
+{% extends 'canteen/main.html' %} {% load static %}
+<br />
 {% block welcome %}
 <h3>{{ heading }}</h3>
-<hr>
-{% endblock %}
-{% block content %}
+<hr />
+{% endblock %} {% block content %}
 <div class="container block-content">
-{% if request.user.customer in active_reservists %}
-<div class="alert alert-danger" role="alert">
-    Sorry, you already have an active reservation. If your reservation status has been Pending for too long, please contact us.
-</div>
-{% elif user.is_staff %}
-<div class="alert alert-danger" role="alert">
-    Canteen staff members are not allowed to make reservations!
-</div>
-{% elif open_seats == 0 %}
-<div class="alert alert-info" role="alert">
+  {% if request.user.customer in active_reservists %}
+  <div class="alert alert-danger" role="alert">
+    Sorry, you already have an active reservation. If your reservation status
+    has been Pending for too long, please contact us.
+  </div>
+  {% elif user.is_staff %}
+  <div class="alert alert-danger" role="alert">
+    Cafeteria staff members are not allowed to make reservations!
+  </div>
+  {% elif open_seats == 0 %}
+  <div class="alert alert-info" role="alert">
     There are currently no open seats. Please, check again later.
-</div>
-{% else %}
-<form method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" class="btn btn-primary btn-lg" value="Reserve">
-</form>
-{% endif %}
+  </div>
+  {% else %}
+  <form method="post">
+    {% csrf_token %} {{ form.as_p }}
+    <input type="submit" class="btn btn-primary btn-lg" value="Reserve" />
+  </form>
+  {% endif %}
 </div>
 {% endblock content %}

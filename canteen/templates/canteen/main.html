@@ -2,7 +2,7 @@
 {% load static %}
 <html>
   <head>
-    <title>Unam Staff Canteen</title>
+    <title>Unam Staff Cafeteria</title>
 
     <meta
       name="viewport"
@@ -130,7 +130,9 @@
           <a href="{% url 'canteen:cart' %}">
             <img id="cart-icon" src="{% static 'images/cart.png' %}" />
           </a>
-          <p id="cart-total">{% if not cartItems %} 0 {% else %} {{cartItems}} {% endif %}</p>
+          <p id="cart-total">
+            {% if not cartItems %} 0 {% else %} {{cartItems}} {% endif %}
+          </p>
           {% else %}
           <ul class="nav">
             <li class="nav-item">
@@ -212,9 +214,7 @@
                 <ul class="list-unstyled">
                   <li><strong>Visit: </strong>No. 45, Main campus</li>
                   <li><strong>Phone: </strong>06100000/081000000</li>
-                  <li>
-                    <strong>Email: </strong>unamcafeteria@gmail.com
-                  </li>
+                  <li><strong>Email: </strong>unamcafeteria@gmail.com</li>
                 </ul>
               </div>
             </div>
@@ -237,7 +237,8 @@
           <div class="row">
             <div class="col-md-12 copy">
               <p class="text-center">
-                &copy; Copyright 2022 - Unam Staff Cafeteria. All rights reserved.
+                &copy; Copyright 2022 - Unam Staff Cafeteria. All rights
+                reserved.
               </p>
             </div>
           </div>
@@ -264,7 +265,6 @@
     ></script>
 
     <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
-    {% block scripts %}
-    {% endblock scripts %}
+    {% block scripts %} {% endblock scripts %}
   </body>
 </html>

@@ -69,8 +69,8 @@ def send_notifications(sender, instance, created, **kwargs):
     try:
         username = customer.customer.username
         customer_cellphone = customer.customer.profile.cellphone
-        customer_cellphone = "+264" + customer_cellphone[1:]
-        print(f"CUSTOMER CELLPHONE: {customer_cellphone}")
+        if customer_cellphone:
+            customer_cellphone = "+264" + customer_cellphone[1:]
         subject = "Seat Reservation Notification"
         domain = Site.objects.get_current().domain
         relative_path = reverse("canteen:reservations")
@@ -104,12 +104,12 @@ def send_notifications(sender, instance, created, **kwargs):
             sms_message = f"Dear Customer,\nYour reservation for Seat No. {seat_number} has been declined. Please try again later or contact us."
         else:
             sms_message = f"Dear Customer,\nYour reservation for Seat No. {seat_number} has expired."
-        print(f"SMS_MESSAGE: {sms_message}")
-        send_sms(
-            sms_message, 
-            settings.DEFAULT_FROM_SMS, 
-            [customer_cellphone], 
-            fail_silently=False
-        )
+        if customer_cellphone:
+            send_sms(
+                sms_message, 
+                settings.DEFAULT_FROM_SMS, 
+                [customer_cellphone], 
+                fail_silently=False
+            )
     except Exception as e:
         print(e)

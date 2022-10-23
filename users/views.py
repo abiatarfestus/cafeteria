@@ -27,6 +27,7 @@ def register(request):
             user = form.save(commit=False)
             user.is_active = False  # Deactivate account till it is confirmed
             user.save()
+            full_name = f"{user.first_name} {user.last_name}"
             current_site = get_current_site(request)
             subject = "Account Activation Request"
             message = render_to_string(
@@ -35,6 +36,8 @@ def register(request):
                     "domain": current_site.domain,
                     "uid": urlsafe_base64_encode(force_bytes(user.pk)),
                     "token": account_activation_token.make_token(user),
+                    "user": full_name,
+                    "user_email": user.email,
                 },
             )
             email_from = settings.DEFAULT_FROM_EMAIL
